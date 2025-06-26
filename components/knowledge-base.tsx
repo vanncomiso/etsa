@@ -20,7 +20,8 @@ import {
   MessageSquareIcon,
   InfoIcon,
   SaveIcon,
-  XIcon
+  XIcon,
+  ChevronDownIcon
 } from "lucide-react"
 
 import { Button } from '@/components/ui/button'
@@ -55,9 +56,9 @@ import { toast } from 'sonner'
 
 const dataTypes = [
   { value: 'context', label: 'Context', icon: InfoIcon, description: 'Background information and knowledge' },
-  { value: 'issue', label: 'Issues', icon: AlertCircleIcon, description: 'Problems and bug reports' },
-  { value: 'inquiry', label: 'Inquiries', icon: MessageSquareIcon, description: 'Questions and requests' },
-  { value: 'product', label: 'Products', icon: PackageIcon, description: 'Product information and details' }
+  { value: 'issue', label: 'Issue', icon: AlertCircleIcon, description: 'Problems and bug reports' },
+  { value: 'inquiry', label: 'Inquiry', icon: MessageSquareIcon, description: 'Questions and requests' },
+  { value: 'product', label: 'Product', icon: PackageIcon, description: 'Product information and details' }
 ]
 
 const filterTabs = [
@@ -108,10 +109,10 @@ export function KnowledgeBase() {
       tags: '',
       metadata: {}
     })
+    setAddType('context')
   }
 
-  const handleOpenAddDialog = (type: 'context' | 'issue' | 'inquiry' | 'product') => {
-    setAddType(type)
+  const handleOpenAddDialog = () => {
     resetForm()
     setIsAddDialogOpen(true)
   }
@@ -212,6 +213,8 @@ export function KnowledgeBase() {
     }
   }, [projects, selectedProject])
 
+  const selectedProjectName = projects.find(p => p.id === selectedProject)?.name || 'Select Project'
+
   return (
     <div className="flex flex-col h-full w-full max-w-full overflow-hidden bg-background">
       <div className="flex-1 overflow-y-auto min-h-0">
@@ -219,62 +222,17 @@ export function KnowledgeBase() {
           <div className="max-w-7xl mx-auto">
             {/* Header */}
             <div className="mb-8">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-                <div>
-                  <h1 className="text-2xl sm:text-3xl font-semibold text-sidebar-foreground mb-2">
-                    Data Library
-                  </h1>
-                  <p className="text-sidebar-foreground/70">
-                    Manage your knowledge base, issues, inquiries, and product information
-                  </p>
-                </div>
-                
-                {/* CTA Buttons */}
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    onClick={() => handleOpenAddDialog('context')}
-                    className="bg-blue-500 hover:bg-blue-600 text-white"
-                    size="sm"
-                  >
-                    <PlusIcon className="h-4 w-4 mr-2" />
-                    Add Context
-                  </Button>
-                  <Button
-                    onClick={() => handleOpenAddDialog('product')}
-                    className="bg-green-500 hover:bg-green-600 text-white"
-                    size="sm"
-                  >
-                    <PlusIcon className="h-4 w-4 mr-2" />
-                    Add Product
-                  </Button>
-                  <Button
-                    onClick={() => handleOpenAddDialog('issue')}
-                    className="bg-red-500 hover:bg-red-600 text-white"
-                    size="sm"
-                  >
-                    <PlusIcon className="h-4 w-4 mr-2" />
-                    Add Issue
-                  </Button>
-                  <Button
-                    onClick={() => handleOpenAddDialog('inquiry')}
-                    className="bg-purple-500 hover:bg-purple-600 text-white"
-                    size="sm"
-                  >
-                    <PlusIcon className="h-4 w-4 mr-2" />
-                    Add Inquiry
-                  </Button>
-                </div>
-              </div>
-
-              {/* Project Selection */}
-              {projects.length > 1 && (
-                <div className="mb-6">
-                  <Label htmlFor="project-select" className="text-sidebar-foreground font-medium mb-2 block">
-                    Select Project
-                  </Label>
+              {/* Project Dropdown and Description */}
+              <div className="mb-6">
+                <div className="flex items-center gap-3 mb-2">
                   <Select value={selectedProject} onValueChange={setSelectedProject}>
-                    <SelectTrigger className="w-full max-w-xs bg-sidebar-accent border-sidebar-border text-sidebar-foreground">
-                      <SelectValue placeholder="Choose a project" />
+                    <SelectTrigger className="w-auto min-w-[200px] bg-sidebar-accent border-sidebar-border text-sidebar-foreground">
+                      <SelectValue placeholder="Select Project">
+                        <span className="text-2xl sm:text-3xl font-semibold">
+                          {selectedProjectName}
+                        </span>
+                      </SelectValue>
+                      <ChevronDownIcon className="h-5 w-5 ml-2" />
                     </SelectTrigger>
                     <SelectContent>
                       {projects.map((project) => (
@@ -285,11 +243,14 @@ export function KnowledgeBase() {
                     </SelectContent>
                   </Select>
                 </div>
-              )}
+                <p className="text-sidebar-foreground/70">
+                  Manage your knowledge base, issues, inquiries, and product information
+                </p>
+              </div>
 
-              {/* Search and Filters */}
-              <div className="space-y-4">
-                <div className="relative max-w-md">
+              {/* Search and Add Data Button */}
+              <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                <div className="relative flex-1 max-w-md">
                   <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-sidebar-foreground/40" />
                   <Input
                     placeholder="Search data..."
@@ -298,24 +259,33 @@ export function KnowledgeBase() {
                     className="pl-10 bg-sidebar-accent border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/40"
                   />
                 </div>
+                
+                <Button
+                  onClick={handleOpenAddDialog}
+                  className="bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90 flex-shrink-0"
+                >
+                  <PlusIcon className="h-4 w-4 mr-2" />
+                  Add Data
+                </Button>
+              </div>
 
-                <div className="flex items-center gap-2 overflow-x-auto">
-                  {filterTabs.map((tab) => (
-                    <Button
-                      key={tab.value}
-                      variant={activeFilter === tab.value ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => setActiveFilter(tab.value)}
-                      className={`whitespace-nowrap flex-shrink-0 ${
-                        activeFilter === tab.value
-                          ? "bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90"
-                          : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
-                      }`}
-                    >
-                      {tab.name}
-                    </Button>
-                  ))}
-                </div>
+              {/* Filter Tabs */}
+              <div className="flex items-center gap-2 overflow-x-auto">
+                {filterTabs.map((tab) => (
+                  <Button
+                    key={tab.value}
+                    variant={activeFilter === tab.value ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setActiveFilter(tab.value)}
+                    className={`whitespace-nowrap flex-shrink-0 ${
+                      activeFilter === tab.value
+                        ? "bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90"
+                        : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+                    }`}
+                  >
+                    {tab.name}
+                  </Button>
+                ))}
               </div>
             </div>
 
@@ -449,24 +419,13 @@ export function KnowledgeBase() {
                     }
                   </p>
                   {(!searchTerm && activeFilter === 'all') && (
-                    <div className="flex flex-wrap gap-2 justify-center">
-                      <Button
-                        onClick={() => handleOpenAddDialog('context')}
-                        size="sm"
-                        className="bg-blue-500 hover:bg-blue-600 text-white"
-                      >
-                        <PlusIcon className="h-4 w-4 mr-2" />
-                        Add Context
-                      </Button>
-                      <Button
-                        onClick={() => handleOpenAddDialog('product')}
-                        size="sm"
-                        className="bg-green-500 hover:bg-green-600 text-white"
-                      >
-                        <PlusIcon className="h-4 w-4 mr-2" />
-                        Add Product
-                      </Button>
-                    </div>
+                    <Button
+                      onClick={handleOpenAddDialog}
+                      className="bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90"
+                    >
+                      <PlusIcon className="h-4 w-4 mr-2" />
+                      Add Data
+                    </Button>
                   )}
                 </div>
               </div>
@@ -480,12 +439,34 @@ export function KnowledgeBase() {
         <DialogContent className="bg-sidebar border-sidebar-border max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-sidebar-foreground flex items-center gap-2">
-              {React.createElement(dataTypes.find(t => t.value === addType)?.icon || InfoIcon, { className: "h-5 w-5" })}
-              Add {dataTypes.find(t => t.value === addType)?.label}
+              <PlusIcon className="h-5 w-5" />
+              Add Data
             </DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-6 mt-6">
+            {/* Type Selection */}
+            <div className="space-y-2">
+              <Label htmlFor="type" className="text-sidebar-foreground font-medium">
+                Type *
+              </Label>
+              <Select value={addType} onValueChange={(value: any) => setAddType(value)}>
+                <SelectTrigger className="bg-sidebar-accent border-sidebar-border text-sidebar-foreground focus:ring-2 focus:ring-blue-500">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {dataTypes.map((type) => (
+                    <SelectItem key={type.value} value={type.value}>
+                      <div className="flex items-center gap-2">
+                        <type.icon className="h-4 w-4" />
+                        <span>{type.label}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             {/* Title */}
             <div className="space-y-2">
               <Label htmlFor="title" className="text-sidebar-foreground font-medium">
