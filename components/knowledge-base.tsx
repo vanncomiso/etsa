@@ -35,19 +35,18 @@ type DataType = 'context' | 'issue' | 'inquiry' | 'product'
 
 const dataTypes = [
   { id: 'context', name: 'Context', icon: FileTextIcon },
-  { id: 'issue', name: 'Issues', icon: AlertTriangleIcon },
-  { id: 'inquiry', name: 'Inquiries', icon: MessageSquareIcon },
-  { id: 'product', name: 'Products', icon: PackageIcon },
+  { id: 'issues', name: 'Issues', icon: AlertTriangleIcon },
+  { id: 'inquiries', name: 'Inquiries', icon: MessageSquareIcon },
+  { id: 'products', name: 'Products', icon: PackageIcon },
 ]
 
 export function KnowledgeBase() {
   const [searchTerm, setSearchTerm] = useState("")
   const [activeType, setActiveType] = useState<DataType | 'all'>('context')
   const [selectedProject, setSelectedProject] = useState<string>('all')
-  const [showAddDialog, setShowAddDialog] = useState(false)
   
   const { projects } = useProjects()
-  const { data, loading, error, createData } = useData()
+  const { data, loading, error } = useData()
 
   // Filter data based on active type and search term
   const filteredData = React.useMemo(() => {
@@ -504,7 +503,6 @@ export function KnowledgeBase() {
                   </p>
                 </div>
                 <Button
-                  onClick={() => setShowAddDialog(true)}
                   className="bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90 flex-shrink-0"
                 >
                   <PlusIcon className="h-4 w-4 mr-2" />
@@ -566,9 +564,9 @@ export function KnowledgeBase() {
               <div className="text-center py-12">
                 <div className="w-16 h-16 bg-sidebar-accent rounded-full flex items-center justify-center mx-auto mb-4">
                   {activeType === 'context' && <FileTextIcon className="h-8 w-8 text-sidebar-foreground/40" />}
-                  {activeType === 'issue' && <AlertTriangleIcon className="h-8 w-8 text-sidebar-foreground/40" />}
-                  {activeType === 'inquiry' && <MessageSquareIcon className="h-8 w-8 text-sidebar-foreground/40" />}
-                  {activeType === 'product' && <PackageIcon className="h-8 w-8 text-sidebar-foreground/40" />}
+                  {activeType === 'issues' && <AlertTriangleIcon className="h-8 w-8 text-sidebar-foreground/40" />}
+                  {activeType === 'inquiries' && <MessageSquareIcon className="h-8 w-8 text-sidebar-foreground/40" />}
+                  {activeType === 'products' && <PackageIcon className="h-8 w-8 text-sidebar-foreground/40" />}
                 </div>
                 <h3 className="text-sidebar-foreground font-medium mb-2">
                   No {dataTypes.find(t => t.id === activeType)?.name.toLowerCase()} found
@@ -580,8 +578,6 @@ export function KnowledgeBase() {
                   }
                 </p>
                 <Button
-                  onClick={() => setShowAddDialog(true)}
-                  onClick={() => setShowAddDialog(true)}
                   className="bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90"
                 >
                   <PlusIcon className="h-4 w-4 mr-2" />
@@ -592,36 +588,6 @@ export function KnowledgeBase() {
           </div>
         </div>
       </div>
-      
-      {/* Simple Add Data Dialog */}
-      {showAddDialog && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-sidebar-accent border border-sidebar-border rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold text-sidebar-foreground mb-4">Add Data</h3>
-            <p className="text-sidebar-foreground/70 mb-4">
-              Data creation functionality will be implemented here.
-            </p>
-            <div className="flex gap-2 justify-end">
-              <Button
-                variant="outline"
-                onClick={() => setShowAddDialog(false)}
-                className="bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={() => {
-                  setShowAddDialog(false)
-                  // TODO: Implement data creation
-                }}
-                className="bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90"
-              >
-                Create
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
