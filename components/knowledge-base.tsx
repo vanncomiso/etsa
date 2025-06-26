@@ -101,6 +101,195 @@ export function KnowledgeBase() {
     })
   }, [data, searchTerm])
 
+  // Type-specific skeleton loaders
+  const renderSkeletonByType = (type: string) => {
+    const baseSkeletonClasses = "animate-pulse space-y-4"
+    
+    switch (type) {
+      case 'context':
+        return (
+          <div className={baseSkeletonClasses}>
+            {/* Header with info icon and context badge */}
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-blue-500/20 rounded-lg"></div>
+                <div className="w-16 h-5 bg-blue-500/20 rounded-full"></div>
+              </div>
+              <div className="w-6 h-6 bg-sidebar-border rounded"></div>
+            </div>
+            
+            {/* Title */}
+            <div className="h-5 bg-sidebar-border rounded w-4/5"></div>
+            
+            {/* Description - longer for context */}
+            <div className="space-y-2">
+              <div className="h-3 bg-sidebar-border rounded w-full"></div>
+              <div className="h-3 bg-sidebar-border rounded w-full"></div>
+              <div className="h-3 bg-sidebar-border rounded w-3/4"></div>
+            </div>
+            
+            {/* Tags */}
+            <div className="flex gap-1">
+              <div className="h-5 bg-sidebar-border rounded-full w-20"></div>
+              <div className="h-5 bg-sidebar-border rounded-full w-16"></div>
+            </div>
+            
+            {/* Footer */}
+            <div className="flex items-center justify-between">
+              <div className="h-3 bg-sidebar-border rounded w-20"></div>
+              <div className="h-3 bg-sidebar-border rounded w-12"></div>
+            </div>
+          </div>
+        )
+      
+      case 'issue':
+        return (
+          <div className={baseSkeletonClasses}>
+            {/* Header with alert icon and issue badge */}
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-red-500/20 rounded-lg"></div>
+                <div className="w-12 h-5 bg-red-500/20 rounded-full"></div>
+              </div>
+              <div className="w-6 h-6 bg-sidebar-border rounded"></div>
+            </div>
+            
+            {/* Title */}
+            <div className="h-5 bg-sidebar-border rounded w-3/4"></div>
+            
+            {/* Description - shorter for issues */}
+            <div className="space-y-2">
+              <div className="h-3 bg-sidebar-border rounded w-full"></div>
+              <div className="h-3 bg-sidebar-border rounded w-2/3"></div>
+            </div>
+            
+            {/* Tags with priority indicator */}
+            <div className="flex gap-1">
+              <div className="h-5 bg-red-500/20 rounded-full w-14"></div>
+              <div className="h-5 bg-sidebar-border rounded-full w-12"></div>
+              <div className="h-5 bg-sidebar-border rounded-full w-16"></div>
+            </div>
+            
+            {/* Footer */}
+            <div className="flex items-center justify-between">
+              <div className="h-3 bg-sidebar-border rounded w-20"></div>
+              <div className="h-3 bg-red-500/20 rounded w-16"></div>
+            </div>
+          </div>
+        )
+      
+      case 'inquiry':
+        return (
+          <div className={baseSkeletonClasses}>
+            {/* Header with message icon and inquiry badge */}
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-purple-500/20 rounded-lg"></div>
+                <div className="w-16 h-5 bg-purple-500/20 rounded-full"></div>
+              </div>
+              <div className="w-6 h-6 bg-sidebar-border rounded"></div>
+            </div>
+            
+            {/* Title */}
+            <div className="h-5 bg-sidebar-border rounded w-5/6"></div>
+            
+            {/* Description - medium length */}
+            <div className="space-y-2">
+              <div className="h-3 bg-sidebar-border rounded w-full"></div>
+              <div className="h-3 bg-sidebar-border rounded w-4/5"></div>
+            </div>
+            
+            {/* Tags */}
+            <div className="flex gap-1">
+              <div className="h-5 bg-sidebar-border rounded-full w-18"></div>
+              <div className="h-5 bg-sidebar-border rounded-full w-14"></div>
+            </div>
+            
+            {/* Footer */}
+            <div className="flex items-center justify-between">
+              <div className="h-3 bg-sidebar-border rounded w-20"></div>
+              <div className="h-3 bg-sidebar-border rounded w-10"></div>
+            </div>
+          </div>
+        )
+      
+      case 'product':
+        return (
+          <div className={baseSkeletonClasses}>
+            {/* Header with package icon and product badge */}
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-green-500/20 rounded-lg"></div>
+                <div className="w-16 h-5 bg-green-500/20 rounded-full"></div>
+              </div>
+              <div className="w-6 h-6 bg-sidebar-border rounded"></div>
+            </div>
+            
+            {/* Title */}
+            <div className="h-5 bg-sidebar-border rounded w-2/3"></div>
+            
+            {/* Description */}
+            <div className="space-y-2">
+              <div className="h-3 bg-sidebar-border rounded w-full"></div>
+              <div className="h-3 bg-sidebar-border rounded w-3/4"></div>
+            </div>
+            
+            {/* Tags */}
+            <div className="flex gap-1">
+              <div className="h-5 bg-sidebar-border rounded-full w-16"></div>
+              <div className="h-5 bg-sidebar-border rounded-full w-12"></div>
+              <div className="h-5 bg-sidebar-border rounded-full w-14"></div>
+            </div>
+            
+            {/* Footer with price */}
+            <div className="flex items-center justify-between">
+              <div className="h-3 bg-sidebar-border rounded w-20"></div>
+              <div className="h-3 bg-green-500/20 rounded w-12"></div>
+            </div>
+          </div>
+        )
+      
+      default:
+        return (
+          <div className={baseSkeletonClasses}>
+            {/* Generic skeleton */}
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-sidebar-border rounded-lg"></div>
+                <div className="w-16 h-5 bg-sidebar-border rounded-full"></div>
+              </div>
+              <div className="w-6 h-6 bg-sidebar-border rounded"></div>
+            </div>
+            
+            <div className="h-5 bg-sidebar-border rounded w-3/4"></div>
+            
+            <div className="space-y-2">
+              <div className="h-3 bg-sidebar-border rounded w-full"></div>
+              <div className="h-3 bg-sidebar-border rounded w-2/3"></div>
+            </div>
+            
+            <div className="flex gap-1">
+              <div className="h-5 bg-sidebar-border rounded-full w-12"></div>
+              <div className="h-5 bg-sidebar-border rounded-full w-16"></div>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="h-3 bg-sidebar-border rounded w-20"></div>
+              <div className="h-3 bg-sidebar-border rounded w-12"></div>
+            </div>
+          </div>
+        )
+    }
+  }
+
+  // Get skeleton types based on current filter
+  const getSkeletonTypes = () => {
+    if (activeFilter === 'all') {
+      return ['context', 'issue', 'inquiry', 'product', 'context', 'product'] // Mixed types
+    }
+    return Array(6).fill(activeFilter) // All same type
+  }
+
   const resetForm = () => {
     setFormData({
       title: '',
@@ -307,194 +496,7 @@ export function KnowledgeBase() {
                   <p className="text-sidebar-foreground/70 mb-4">
                     Choose a project to view and manage its data library
                   </p>
-  // Type-specific skeleton loaders
-  const renderSkeletonByType = (type: string) => {
-    const baseSkeletonClasses = "animate-pulse space-y-4"
-    
-    switch (type) {
-      case 'context':
-        return (
-          <div className={baseSkeletonClasses}>
-            {/* Header with info icon and context badge */}
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-blue-500/20 rounded-lg"></div>
-                <div className="w-16 h-5 bg-blue-500/20 rounded-full"></div>
-              </div>
-              <div className="w-6 h-6 bg-sidebar-border rounded"></div>
-            </div>
-            
-            {/* Title */}
-            <div className="h-5 bg-sidebar-border rounded w-4/5"></div>
-            
-            {/* Description - longer for context */}
-            <div className="space-y-2">
-              <div className="h-3 bg-sidebar-border rounded w-full"></div>
-              <div className="h-3 bg-sidebar-border rounded w-full"></div>
-              <div className="h-3 bg-sidebar-border rounded w-3/4"></div>
-            </div>
-            
-            {/* Tags */}
-            <div className="flex gap-1">
-              <div className="h-5 bg-sidebar-border rounded-full w-20"></div>
-              <div className="h-5 bg-sidebar-border rounded-full w-16"></div>
-            </div>
-            
-            {/* Footer */}
-            <div className="flex items-center justify-between">
-              <div className="h-3 bg-sidebar-border rounded w-20"></div>
-              <div className="h-3 bg-sidebar-border rounded w-12"></div>
-            </div>
-          </div>
-        )
-      
-      case 'issue':
-        return (
-          <div className={baseSkeletonClasses}>
-            {/* Header with alert icon and issue badge */}
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-red-500/20 rounded-lg"></div>
-                <div className="w-12 h-5 bg-red-500/20 rounded-full"></div>
-              </div>
-              <div className="w-6 h-6 bg-sidebar-border rounded"></div>
-            </div>
-            
-            {/* Title */}
-            <div className="h-5 bg-sidebar-border rounded w-3/4"></div>
-            
-            {/* Description - shorter for issues */}
-            <div className="space-y-2">
-              <div className="h-3 bg-sidebar-border rounded w-full"></div>
-              <div className="h-3 bg-sidebar-border rounded w-2/3"></div>
-            </div>
-            
-            {/* Tags with priority indicator */}
-            <div className="flex gap-1">
-              <div className="h-5 bg-red-500/20 rounded-full w-14"></div>
-              <div className="h-5 bg-sidebar-border rounded-full w-12"></div>
-              <div className="h-5 bg-sidebar-border rounded-full w-16"></div>
-            </div>
-            
-            {/* Footer */}
-            <div className="flex items-center justify-between">
-              <div className="h-3 bg-sidebar-border rounded w-20"></div>
-              <div className="h-3 bg-red-500/20 rounded w-16"></div>
-            </div>
-          </div>
-        )
-      
-      case 'inquiry':
-        return (
-          <div className={baseSkeletonClasses}>
-            {/* Header with message icon and inquiry badge */}
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-purple-500/20 rounded-lg"></div>
-                <div className="w-16 h-5 bg-purple-500/20 rounded-full"></div>
-              </div>
-              <div className="w-6 h-6 bg-sidebar-border rounded"></div>
-            </div>
-            
-            {/* Title */}
-            <div className="h-5 bg-sidebar-border rounded w-5/6"></div>
-            
-            {/* Description - medium length */}
-            <div className="space-y-2">
-              <div className="h-3 bg-sidebar-border rounded w-full"></div>
-              <div className="h-3 bg-sidebar-border rounded w-4/5"></div>
-            </div>
-            
-            {/* Tags */}
-            <div className="flex gap-1">
-              <div className="h-5 bg-sidebar-border rounded-full w-18"></div>
-              <div className="h-5 bg-sidebar-border rounded-full w-14"></div>
-            </div>
-            
-            {/* Footer */}
-            <div className="flex items-center justify-between">
-              <div className="h-3 bg-sidebar-border rounded w-20"></div>
-              <div className="h-3 bg-sidebar-border rounded w-10"></div>
-            </div>
-          </div>
-        )
-      
-      case 'product':
-        return (
-          <div className={baseSkeletonClasses}>
-            {/* Header with package icon and product badge */}
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-green-500/20 rounded-lg"></div>
-                <div className="w-16 h-5 bg-green-500/20 rounded-full"></div>
-              </div>
-              <div className="w-6 h-6 bg-sidebar-border rounded"></div>
-            </div>
-            
-            {/* Title */}
-            <div className="h-5 bg-sidebar-border rounded w-2/3"></div>
-            
-            {/* Description */}
-            <div className="space-y-2">
-              <div className="h-3 bg-sidebar-border rounded w-full"></div>
-              <div className="h-3 bg-sidebar-border rounded w-3/4"></div>
-            </div>
-            
-            {/* Tags */}
-            <div className="flex gap-1">
-              <div className="h-5 bg-sidebar-border rounded-full w-16"></div>
-              <div className="h-5 bg-sidebar-border rounded-full w-12"></div>
-              <div className="h-5 bg-sidebar-border rounded-full w-14"></div>
-            </div>
-            
-            {/* Footer with price */}
-            <div className="flex items-center justify-between">
-              <div className="h-3 bg-sidebar-border rounded w-20"></div>
-              <div className="h-3 bg-green-500/20 rounded w-12"></div>
-            </div>
-          </div>
-        )
-      
-      default:
-        return (
-          <div className={baseSkeletonClasses}>
-            {/* Generic skeleton */}
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-sidebar-border rounded-lg"></div>
-                <div className="w-16 h-5 bg-sidebar-border rounded-full"></div>
-              </div>
-              <div className="w-6 h-6 bg-sidebar-border rounded"></div>
-            </div>
-            
-            <div className="h-5 bg-sidebar-border rounded w-3/4"></div>
-            
-            <div className="space-y-2">
-              <div className="h-3 bg-sidebar-border rounded w-full"></div>
-              <div className="h-3 bg-sidebar-border rounded w-2/3"></div>
-            </div>
-            
-            <div className="flex gap-1">
-              <div className="h-5 bg-sidebar-border rounded-full w-12"></div>
-              <div className="h-5 bg-sidebar-border rounded-full w-16"></div>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div className="h-3 bg-sidebar-border rounded w-20"></div>
-              <div className="h-3 bg-sidebar-border rounded w-12"></div>
-            </div>
-          </div>
-        )
-    }
-  }
                 </div>
-  // Get skeleton types based on current filter
-  const getSkeletonTypes = () => {
-    if (activeFilter === 'all') {
-      return ['context', 'issue', 'inquiry', 'product', 'context', 'product'] // Mixed types
-    }
-    return Array(6).fill(activeFilter) // All same type
-  }
               </div>
             ) : loading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
