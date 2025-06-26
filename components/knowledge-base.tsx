@@ -8,983 +8,713 @@ import {
   PlusIcon,
   FileTextIcon,
   LinkIcon,
-  TagIcon,
-  CalendarIcon,
+  UploadIcon,
   MoreVerticalIcon,
-  EditIcon,
-  TrashIcon,
-  ExternalLinkIcon,
-  PackageIcon,
-  DollarSignIcon,
-  AlertCircleIcon,
-  MessageSquareIcon,
-  InfoIcon,
-  SaveIcon,
-  XIcon,
-  ChevronDownIcon,
-  ArrowUpIcon,
-  ArrowDownIcon,
-  ClockIcon,
+  CalendarIcon,
+  TagIcon,
   UserIcon,
-  UsersIcon,
-  BookOpenIcon,
-  ShieldAlertIcon,
-  HelpCircleIcon,
-  StarIcon,
+  ShieldIcon,
+  AlertTriangleIcon,
   TrendingUpIcon,
-  CheckCircleIcon,
-  AlertTriangleIcon
+  UsersIcon,
+  ArrowUpIcon,
+  MessageCircleIcon,
+  ShareIcon,
+  DollarSignIcon,
+  PackageIcon,
+  StarIcon,
+  EyeIcon,
+  ShoppingCartIcon,
+  BookOpenIcon,
+  MessageSquareIcon,
+  HelpCircleIcon,
+  BugIcon
 } from "lucide-react"
 
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Textarea } from '@/components/ui/textarea'
-import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { useData } from '@/hooks/use-data'
 import { useProjects } from '@/hooks/use-projects'
-import { toast } from 'sonner'
 
 const dataTypes = [
-  { value: 'context', label: 'Context', icon: InfoIcon, description: 'Background information and knowledge' },
-  { value: 'issue', label: 'Issue', icon: AlertCircleIcon, description: 'Problems and bug reports' },
-  { value: 'inquiry', label: 'Inquiry', icon: MessageSquareIcon, description: 'Questions and requests' },
-  { value: 'product', label: 'Product', icon: PackageIcon, description: 'Product information and details' }
-]
-
-const filterTabs = [
-  { name: "Context", value: "context" },
-  { name: "Issues", value: "issue" },
-  { name: "Inquiries", value: "inquiry" },
-  { name: "Products", value: "product" }
+  { id: 'context', name: 'Context', icon: BookOpenIcon },
+  { id: 'issues', name: 'Issues', icon: BugIcon },
+  { id: 'inquiries', name: 'Inquiries', icon: MessageSquareIcon },
+  { id: 'products', name: 'Products', icon: PackageIcon }
 ]
 
 export function KnowledgeBase() {
+  const [selectedType, setSelectedType] = useState<'context' | 'issues' | 'inquiries' | 'products'>('context')
   const [searchTerm, setSearchTerm] = useState("")
-  const [activeFilter, setActiveFilter] = useState("context")
-  const [selectedProject, setSelectedProject] = useState<string>("")
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
-  const [addType, setAddType] = useState<'context' | 'issue' | 'inquiry' | 'product'>('context')
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showCreateForm, setShowCreateForm] = useState(false)
   
-  // Form state
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    content: '',
-    tags: '',
-    metadata: {} as Record<string, any>
-  })
-
   const { projects } = useProjects()
-  const { data, loading, createData, deleteData } = useData(
-    selectedProject || undefined,
-    activeFilter as any
-  )
+  const { data, loading, error } = useData(undefined, selectedType)
 
   const filteredData = React.useMemo(() => {
     return data.filter(item => {
       const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            item.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           item.content?.toLowerCase().includes(searchTerm.toLowerCase())
+                           item.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
       return matchesSearch
     })
   }, [data, searchTerm])
 
-  // Enhanced skeleton loaders with sophisticated designs
-  const renderSkeletonByType = (type: string) => {
-    const baseSkeletonClasses = "animate-pulse"
-    
-    switch (type) {
-      case 'context':
-        // Knowledge Base Card - Document style with sidebar
-        return (
-          <Card className="bg-sidebar-accent border-sidebar-border h-72 overflow-hidden">
-            <div className={baseSkeletonClasses}>
-              {/* Header with document icon and metadata */}
-              <div className="bg-sidebar-foreground/5 p-4 border-b border-sidebar-border">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-sidebar-border rounded-lg flex items-center justify-center">
-                      <div className="w-5 h-5 bg-sidebar-border rounded"></div>
-                    </div>
-                    <div>
-                      <div className="h-4 bg-sidebar-border rounded w-24 mb-1"></div>
-                      <div className="h-3 bg-sidebar-border rounded w-16"></div>
-                    </div>
-                  </div>
-                  <div className="w-6 h-6 bg-sidebar-border rounded"></div>
-                </div>
-              </div>
-              
-              {/* Content area */}
-              <div className="p-4">
-                <div className="h-5 bg-sidebar-border rounded w-4/5 mb-3"></div>
-                
-                <div className="space-y-2 mb-4">
-                  <div className="h-3 bg-sidebar-border rounded w-full"></div>
-                  <div className="h-3 bg-sidebar-border rounded w-full"></div>
-                  <div className="h-3 bg-sidebar-border rounded w-3/4"></div>
-                </div>
-                
-                {/* Tags section */}
-                <div className="flex gap-2 mb-4">
-                  <div className="h-5 bg-sidebar-border rounded-full w-16"></div>
-                  <div className="h-5 bg-sidebar-border rounded-full w-20"></div>
-                  <div className="h-5 bg-sidebar-border rounded-full w-14"></div>
-                </div>
-                
-                {/* Footer with stats */}
-                <div className="flex items-center justify-between pt-3 border-t border-sidebar-border">
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 bg-sidebar-border rounded"></div>
-                    <div className="h-3 bg-sidebar-border rounded w-20"></div>
-                  </div>
-                  <div className="h-3 bg-sidebar-border rounded w-12"></div>
-                </div>
-              </div>
+  const renderContextCard = (item: typeof data[0]) => (
+    <Card
+      key={item.id}
+      className="bg-sidebar-accent border-sidebar-border hover:border-sidebar-foreground/20 transition-all duration-200 cursor-pointer p-6"
+    >
+      <div className="space-y-4">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div className="w-10 h-10 rounded-lg bg-sidebar-border flex items-center justify-center flex-shrink-0">
+              <BookOpenIcon className="h-5 w-5 text-sidebar-foreground/70" />
             </div>
-          </Card>
-        )
-      
-      case 'issue':
-        // Issue Tracker Card - Compact with status indicators
-        return (
-          <Card className="bg-sidebar-accent border-sidebar-border h-44 border-l-4 border-l-sidebar-border">
-            <div className={baseSkeletonClasses}>
-              {/* Issue header */}
-              <div className="p-4 pb-3">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-sidebar-border rounded-full"></div>
-                    <div className="h-4 bg-sidebar-border rounded w-16"></div>
-                    <div className="h-4 bg-sidebar-border rounded-full w-12"></div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-4 bg-sidebar-border rounded"></div>
-                    <div className="w-5 h-5 bg-sidebar-border rounded"></div>
-                  </div>
-                </div>
-                
-                <div className="h-5 bg-sidebar-border rounded w-5/6 mb-3"></div>
-                
-                <div className="space-y-2 mb-4">
-                  <div className="h-3 bg-sidebar-border rounded w-full"></div>
-                  <div className="h-3 bg-sidebar-border rounded w-4/5"></div>
-                </div>
-              </div>
-              
-              {/* Issue footer */}
-              <div className="px-4 pb-4">
-                <div className="flex items-center justify-between pt-3 border-t border-sidebar-border">
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1">
-                      <div className="w-4 h-4 bg-sidebar-border rounded"></div>
-                      <div className="h-3 bg-sidebar-border rounded w-8"></div>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <div className="w-4 h-4 bg-sidebar-border rounded"></div>
-                      <div className="h-3 bg-sidebar-border rounded w-12"></div>
-                    </div>
-                  </div>
-                  <div className="h-3 bg-sidebar-border rounded w-16"></div>
-                </div>
-              </div>
-            </div>
-          </Card>
-        )
-      
-      case 'inquiry':
-        // Discussion Card - Forum/Reddit style
-        return (
-          <Card className="bg-sidebar-accent border-sidebar-border h-48">
-            <div className={baseSkeletonClasses}>
-              {/* Discussion header */}
-              <div className="p-4 border-b border-sidebar-border">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-8 h-8 bg-sidebar-border rounded-full"></div>
-                  <div>
-                    <div className="h-3 bg-sidebar-border rounded w-20 mb-1"></div>
-                    <div className="h-3 bg-sidebar-border rounded w-16"></div>
-                  </div>
-                  <div className="ml-auto w-6 h-6 bg-sidebar-border rounded"></div>
-                </div>
-                
-                <div className="h-5 bg-sidebar-border rounded w-4/5"></div>
-              </div>
-              
-              {/* Discussion content */}
-              <div className="p-4">
-                <div className="space-y-2 mb-4">
-                  <div className="h-3 bg-sidebar-border rounded w-full"></div>
-                  <div className="h-3 bg-sidebar-border rounded w-full"></div>
-                  <div className="h-3 bg-sidebar-border rounded w-3/4"></div>
-                </div>
-                
-                {/* Interaction bar */}
-                <div className="flex items-center gap-6 pt-3 border-t border-sidebar-border">
-                  <div className="flex items-center gap-1">
-                    <div className="w-4 h-4 bg-sidebar-border rounded"></div>
-                    <div className="h-3 bg-sidebar-border rounded w-8"></div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-4 h-4 bg-sidebar-border rounded"></div>
-                    <div className="h-3 bg-sidebar-border rounded w-12"></div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-4 h-4 bg-sidebar-border rounded"></div>
-                    <div className="h-3 bg-sidebar-border rounded w-10"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Card>
-        )
-      
-      case 'product':
-        // Product Showcase Card - E-commerce style
-        return (
-          <Card className="bg-sidebar-accent border-sidebar-border h-96 overflow-hidden">
-            <div className={baseSkeletonClasses}>
-              {/* Product image */}
-              <div className="h-40 bg-sidebar-border"></div>
-              
-              {/* Product info */}
-              <div className="p-4">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-sidebar-border rounded"></div>
-                    <div className="h-4 bg-sidebar-border rounded-full w-16"></div>
-                  </div>
-                  <div className="w-5 h-5 bg-sidebar-border rounded"></div>
-                </div>
-                
-                <div className="h-6 bg-sidebar-border rounded w-3/4 mb-3"></div>
-                
-                <div className="space-y-2 mb-4">
-                  <div className="h-3 bg-sidebar-border rounded w-full"></div>
-                  <div className="h-3 bg-sidebar-border rounded w-4/5"></div>
-                </div>
-                
-                {/* Price and rating */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="h-7 bg-sidebar-border rounded w-20"></div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-4 h-4 bg-sidebar-border rounded"></div>
-                    <div className="h-3 bg-sidebar-border rounded w-8"></div>
-                  </div>
-                </div>
-                
-                {/* Tags */}
-                <div className="flex gap-1 mb-4">
-                  <div className="h-5 bg-sidebar-border rounded-full w-12"></div>
-                  <div className="h-5 bg-sidebar-border rounded-full w-16"></div>
-                </div>
-                
-                {/* Footer */}
-                <div className="flex items-center justify-between pt-3 border-t border-sidebar-border">
-                  <div className="h-3 bg-sidebar-border rounded w-20"></div>
-                  <div className="h-3 bg-sidebar-border rounded w-12"></div>
-                </div>
-              </div>
-            </div>
-          </Card>
-        )
-      
-      default:
-        return (
-          <Card className="bg-sidebar-accent border-sidebar-border p-6 h-64">
-            <div className={baseSkeletonClasses}>
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-sidebar-border rounded-lg"></div>
-                  <div className="w-16 h-5 bg-sidebar-border rounded-full"></div>
-                </div>
-                <div className="w-6 h-6 bg-sidebar-border rounded"></div>
-              </div>
-              
-              <div className="h-5 bg-sidebar-border rounded w-3/4 mb-3"></div>
-              
-              <div className="space-y-2 mb-4">
-                <div className="h-3 bg-sidebar-border rounded w-full"></div>
-                <div className="h-3 bg-sidebar-border rounded w-2/3"></div>
-              </div>
-              
-              <div className="flex gap-1 mb-4">
-                <div className="h-5 bg-sidebar-border rounded-full w-12"></div>
-                <div className="h-5 bg-sidebar-border rounded-full w-16"></div>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="h-3 bg-sidebar-border rounded w-20"></div>
-                <div className="h-3 bg-sidebar-border rounded w-12"></div>
-              </div>
-            </div>
-          </Card>
-        )
-    }
-  }
-
-  // Get skeleton types based on current filter
-  const getSkeletonTypes = () => {
-    return Array(6).fill(activeFilter) // All same type based on filter
-  }
-
-  // Generate random report count for issues
-  const getReportCount = (itemId: string) => {
-    // Use item ID to generate consistent random number
-    const hash = itemId.split('').reduce((a, b) => {
-      a = ((a << 5) - a) + b.charCodeAt(0)
-      return a & a
-    }, 0)
-    return Math.abs(hash % 50) + 1 // 1-50 reports
-  }
-
-  // Render data items with sophisticated professional designs
-  const renderDataItem = (item: any) => {
-    const TypeIcon = getTypeIcon(item.type)
-    
-    switch (item.type) {
-      case 'context':
-        // Knowledge Base Card - Document style with sophisticated layout
-        return (
-          <Card
-            key={item.id}
-            className="bg-sidebar-accent border-sidebar-border hover:border-sidebar-foreground/30 transition-all duration-200 h-72 flex flex-col group overflow-hidden"
-          >
-            {/* Document Header */}
-            <div className="bg-sidebar-foreground/5 p-4 border-b border-sidebar-border flex-shrink-0">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-sidebar-foreground/10 rounded-lg flex items-center justify-center group-hover:bg-sidebar-foreground/15 transition-colors">
-                    <BookOpenIcon className="h-5 w-5 text-sidebar-foreground/70" />
-                  </div>
-                  <div>
-                    <Badge variant="outline" className="text-xs bg-sidebar-foreground/10 text-sidebar-foreground/80 border-sidebar-foreground/20 mb-1">
-                      Knowledge Base
-                    </Badge>
-                    <p className="text-xs text-sidebar-foreground/60">#{item.id.slice(-6)}</p>
-                  </div>
-                </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-sidebar-foreground/60 hover:text-sidebar-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                      <MoreVerticalIcon className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      <EditIcon className="h-4 w-4 mr-2" />
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => handleDelete(item.id, item.title)}
-                      className="text-red-600 focus:text-red-600"
-                    >
-                      <TrashIcon className="h-4 w-4 mr-2" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
-
-            {/* Document Content */}
-            <div className="p-4 flex-1 flex flex-col">
-              <h3 className="text-sidebar-foreground font-semibold mb-3 line-clamp-2 flex-shrink-0 leading-tight text-lg">
+            <div className="min-w-0 flex-1">
+              <h3 className="text-sidebar-foreground font-semibold text-base line-clamp-1 mb-1">
                 {item.title}
               </h3>
-
-              {item.description && (
-                <p className="text-sidebar-foreground/70 text-sm mb-4 line-clamp-3 flex-1 leading-relaxed">
-                  {item.description}
-                </p>
-              )}
-
-              {/* Tags Section */}
-              {item.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1 mb-4 flex-shrink-0">
-                  {item.tags.slice(0, 3).map((tag: string, index: number) => (
-                    <Badge
-                      key={index}
-                      variant="outline"
-                      className="text-xs bg-sidebar-foreground/5 text-sidebar-foreground/60 border-sidebar-foreground/15 hover:bg-sidebar-foreground/10 transition-colors"
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
-                  {item.tags.length > 3 && (
-                    <Badge
-                      variant="outline"
-                      className="text-xs bg-sidebar-foreground/5 text-sidebar-foreground/60 border-sidebar-foreground/15"
-                    >
-                      +{item.tags.length - 3}
-                    </Badge>
-                  )}
-                </div>
-              )}
-
-              {/* Document Footer */}
-              <div className="flex items-center justify-between text-xs text-sidebar-foreground/60 flex-shrink-0 pt-3 border-t border-sidebar-border">
-                <div className="flex items-center gap-2">
-                  <CalendarIcon className="h-3 w-3" />
-                  <span>Updated {formatDate(item.created_at)}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <FileTextIcon className="h-3 w-3" />
-                  <span>Doc</span>
-                </div>
+              <div className="flex items-center gap-2 text-xs text-sidebar-foreground/60">
+                <CalendarIcon className="h-3 w-3" />
+                <span>{new Date(item.created_at).toLocaleDateString()}</span>
               </div>
             </div>
-          </Card>
-        )
+          </div>
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-sidebar-foreground/60 hover:text-sidebar-foreground flex-shrink-0">
+            <MoreVerticalIcon className="h-4 w-4" />
+          </Button>
+        </div>
 
-      case 'issue':
-        // Issue Tracker Card - Compact with status indicators
-        const reportCount = getReportCount(item.id)
-        const priorityConfig = {
-          critical: { color: 'border-red-500/30 bg-red-500/10 text-red-600', icon: AlertTriangleIcon },
-          high: { color: 'border-orange-500/30 bg-orange-500/10 text-orange-600', icon: AlertCircleIcon },
-          medium: { color: 'border-yellow-500/30 bg-yellow-500/10 text-yellow-600', icon: InfoIcon },
-          low: { color: 'border-sidebar-foreground/20 bg-sidebar-foreground/10 text-sidebar-foreground/70', icon: CheckCircleIcon }
-        }
-        const priority = item.metadata.priority || 'low'
-        const PriorityIcon = priorityConfig[priority as keyof typeof priorityConfig]?.icon || InfoIcon
-        
-        return (
-          <Card
-            key={item.id}
-            className={`bg-sidebar-accent border-sidebar-border hover:border-sidebar-foreground/30 transition-all duration-200 h-44 flex flex-col group border-l-4 ${
-              priority === 'critical' ? 'border-l-red-500/50' :
-              priority === 'high' ? 'border-l-orange-500/50' :
-              priority === 'medium' ? 'border-l-yellow-500/50' :
-              'border-l-sidebar-foreground/30'
-            }`}
-          >
-            {/* Issue Header */}
-            <div className="p-4 pb-3 flex-shrink-0">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 bg-sidebar-foreground/10 rounded-full flex items-center justify-center group-hover:bg-sidebar-foreground/15 transition-colors">
-                    <ShieldAlertIcon className="h-3 w-3 text-sidebar-foreground/70" />
-                  </div>
-                  <Badge variant="outline" className="text-xs bg-sidebar-foreground/10 text-sidebar-foreground/80 border-sidebar-foreground/20">
+        {/* Description */}
+        <p className="text-sidebar-foreground/70 text-sm line-clamp-2 leading-relaxed">
+          {item.description}
+        </p>
+
+        {/* Tags */}
+        {item.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {item.tags.slice(0, 3).map((tag, index) => (
+              <Badge
+                key={index}
+                variant="outline"
+                className="text-xs bg-sidebar-foreground/5 text-sidebar-foreground/60 border-sidebar-foreground/10"
+              >
+                {tag}
+              </Badge>
+            ))}
+            {item.tags.length > 3 && (
+              <Badge
+                variant="outline"
+                className="text-xs bg-sidebar-foreground/5 text-sidebar-foreground/60 border-sidebar-foreground/10"
+              >
+                +{item.tags.length - 3}
+              </Badge>
+            )}
+          </div>
+        )}
+
+        {/* Footer */}
+        <div className="flex items-center justify-between pt-2 border-t border-sidebar-border">
+          <div className="flex items-center gap-4 text-xs text-sidebar-foreground/60">
+            <div className="flex items-center gap-1">
+              <EyeIcon className="h-3 w-3" />
+              <span>Views</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <TagIcon className="h-3 w-3" />
+              <span>{item.tags.length} tags</span>
+            </div>
+          </div>
+          <div className="text-xs text-sidebar-foreground/60">
+            {item.metadata?.source && (
+              <span className="capitalize">{item.metadata.source}</span>
+            )}
+          </div>
+        </div>
+      </div>
+    </Card>
+  )
+
+  const renderIssueCard = (item: typeof data[0]) => (
+    <Card
+      key={item.id}
+      className="bg-sidebar-accent border-sidebar-border hover:border-sidebar-foreground/20 transition-all duration-200 cursor-pointer overflow-hidden"
+    >
+      {/* Priority indicator bar */}
+      <div className={`h-1 w-full ${
+        item.metadata?.priority === 'high' ? 'bg-red-500' :
+        item.metadata?.priority === 'medium' ? 'bg-yellow-500' :
+        'bg-green-500'
+      }`} />
+      
+      <div className="p-4 sm:p-6">
+        <div className="space-y-4">
+          {/* Header with responsive layout */}
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+            <div className="flex items-start gap-3 min-w-0 flex-1">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-sidebar-border flex items-center justify-center flex-shrink-0">
+                <ShieldIcon className="h-4 w-4 sm:h-5 sm:w-5 text-sidebar-foreground/70" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2 mb-2">
+                  <Badge variant="outline" className="text-xs bg-sidebar-foreground/10 text-sidebar-foreground/70 border-sidebar-foreground/20">
                     Issue
                   </Badge>
                   <Badge 
                     variant="outline" 
-                    className={`text-xs ${priorityConfig[priority as keyof typeof priorityConfig]?.color || 'bg-sidebar-foreground/10 text-sidebar-foreground/70 border-sidebar-foreground/20'}`}
+                    className={`text-xs border-sidebar-foreground/20 ${
+                      item.metadata?.priority === 'high' ? 'bg-red-500/10 text-red-600 border-red-500/20' :
+                      item.metadata?.priority === 'medium' ? 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20' :
+                      'bg-green-500/10 text-green-600 border-green-500/20'
+                    }`}
                   >
-                    <PriorityIcon className="h-3 w-3 mr-1" />
-                    {priority}
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1 text-xs text-sidebar-foreground/60 bg-sidebar-foreground/5 px-2 py-1 rounded-full">
-                    <UsersIcon className="h-3 w-3" />
-                    <span>{reportCount} reports</span>
-                  </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-6 w-6 text-sidebar-foreground/60 hover:text-sidebar-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                        <MoreVerticalIcon className="h-3 w-3" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        <EditIcon className="h-4 w-4 mr-2" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleDelete(item.id, item.title)}
-                        className="text-red-600 focus:text-red-600"
-                      >
-                        <TrashIcon className="h-4 w-4 mr-2" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
-
-              <h3 className="text-sidebar-foreground font-semibold text-sm line-clamp-1 mb-3 leading-tight">
-                {item.title}
-              </h3>
-
-              {item.description && (
-                <p className="text-sidebar-foreground/70 text-xs line-clamp-2 leading-relaxed flex-1">
-                  {item.description}
-                </p>
-              )}
-            </div>
-
-            {/* Issue Footer */}
-            <div className="px-4 pb-4 mt-auto">
-              <div className="flex items-center justify-between pt-3 border-t border-sidebar-border text-xs text-sidebar-foreground/60">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1">
-                    <CalendarIcon className="h-3 w-3" />
-                    <span>Reported {formatDate(item.created_at)}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <TrendingUpIcon className="h-3 w-3" />
-                    <span>Active</span>
-                  </div>
-                </div>
-                <span className="text-sidebar-foreground/40 font-mono">#{item.id.slice(-6)}</span>
-              </div>
-            </div>
-          </Card>
-        )
-
-      case 'inquiry':
-        // Discussion Card - Forum/Reddit style with enhanced layout
-        return (
-          <Card
-            key={item.id}
-            className="bg-sidebar-accent border-sidebar-border hover:border-sidebar-foreground/30 transition-all duration-200 h-48 flex flex-col group"
-          >
-            {/* Discussion Header */}
-            <div className="p-4 border-b border-sidebar-border flex-shrink-0">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-8 bg-sidebar-foreground/10 rounded-full flex items-center justify-center group-hover:bg-sidebar-foreground/15 transition-colors">
-                  <UserIcon className="h-4 w-4 text-sidebar-foreground/70" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs text-sidebar-foreground/70 font-medium">community</span>
-                    <span className="w-1 h-1 bg-sidebar-foreground/30 rounded-full"></span>
-                    <span className="text-xs text-sidebar-foreground/60">{formatDate(item.created_at)}</span>
-                  </div>
-                  <Badge variant="outline" className="text-xs bg-sidebar-foreground/10 text-sidebar-foreground/80 border-sidebar-foreground/20">
-                    Discussion
-                  </Badge>
-                </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-6 w-6 text-sidebar-foreground/60 hover:text-sidebar-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                      <MoreVerticalIcon className="h-3 w-3" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      <EditIcon className="h-4 w-4 mr-2" />
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => handleDelete(item.id, item.title)}
-                      className="text-red-600 focus:text-red-600"
-                    >
-                      <TrashIcon className="h-4 w-4 mr-2" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-
-              <h3 className="text-sidebar-foreground font-semibold text-sm line-clamp-2 leading-tight">
-                {item.title}
-              </h3>
-            </div>
-
-            {/* Discussion Content */}
-            <div className="p-4 flex-1 flex flex-col">
-              {item.description && (
-                <p className="text-sidebar-foreground/70 text-xs line-clamp-3 mb-4 flex-1 leading-relaxed">
-                  {item.description}
-                </p>
-              )}
-
-              {/* Interaction Bar */}
-              <div className="flex items-center gap-6 text-xs text-sidebar-foreground/60 pt-3 border-t border-sidebar-border flex-shrink-0">
-                <div className="flex items-center gap-1 hover:text-sidebar-foreground transition-colors cursor-pointer">
-                  <ArrowUpIcon className="h-3 w-3" />
-                  <span>Upvote</span>
-                </div>
-                <div className="flex items-center gap-1 hover:text-sidebar-foreground transition-colors cursor-pointer">
-                  <MessageSquareIcon className="h-3 w-3" />
-                  <span>Reply</span>
-                </div>
-                <div className="flex items-center gap-1 hover:text-sidebar-foreground transition-colors cursor-pointer">
-                  <ExternalLinkIcon className="h-3 w-3" />
-                  <span>Share</span>
-                </div>
-                {item.tags.length > 0 && (
-                  <Badge variant="outline" className="text-xs bg-sidebar-foreground/5 text-sidebar-foreground/60 border-sidebar-foreground/15 ml-auto">
-                    {item.tags[0]}
-                  </Badge>
-                )}
-              </div>
-            </div>
-          </Card>
-        )
-
-      case 'product':
-        // Product Showcase Card - E-commerce style with enhanced layout
-        return (
-          <Card
-            key={item.id}
-            className="bg-sidebar-accent border-sidebar-border hover:border-sidebar-foreground/30 transition-all duration-200 h-96 flex flex-col group overflow-hidden"
-          >
-            {/* Product Image */}
-            <div className="h-40 bg-sidebar-foreground/10 flex items-center justify-center flex-shrink-0 group-hover:bg-sidebar-foreground/15 transition-colors relative">
-              <PackageIcon className="h-12 w-12 text-sidebar-foreground/40" />
-              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-sidebar-foreground/60 hover:text-sidebar-foreground bg-sidebar-accent/80 backdrop-blur-sm">
-                      <MoreVerticalIcon className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      <EditIcon className="h-4 w-4 mr-2" />
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => handleDelete(item.id, item.title)}
-                      className="text-red-600 focus:text-red-600"
-                    >
-                      <TrashIcon className="h-4 w-4 mr-2" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
-
-            {/* Product Info */}
-            <div className="p-4 flex-1 flex flex-col">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <div className="p-1 rounded bg-sidebar-foreground/10 text-sidebar-foreground group-hover:bg-sidebar-foreground/15 transition-colors">
-                    <PackageIcon className="h-4 w-4" />
-                  </div>
-                  <Badge variant="outline" className="text-xs bg-sidebar-foreground/10 text-sidebar-foreground/80 border-sidebar-foreground/20">
-                    Product
+                    {item.metadata?.priority || 'low'}
                   </Badge>
                 </div>
               </div>
-
-              <h3 className="text-sidebar-foreground font-semibold mb-3 line-clamp-2 flex-shrink-0 leading-tight text-lg">
-                {item.title}
-              </h3>
-
-              {item.description && (
-                <p className="text-sidebar-foreground/70 text-sm mb-4 line-clamp-3 flex-1 leading-relaxed">
-                  {item.description}
-                </p>
-              )}
-
-              {/* Price and Rating */}
-              <div className="flex items-center justify-between mb-4 flex-shrink-0">
-                {item.metadata.price && (
-                  <div className="flex items-center gap-1 text-sidebar-foreground font-bold text-lg">
-                    <DollarSignIcon className="h-5 w-5" />
-                    <span>{item.metadata.price}</span>
-                  </div>
-                )}
-                <div className="flex items-center gap-1 text-xs text-sidebar-foreground/60">
-                  <StarIcon className="h-3 w-3 fill-current" />
-                  <span>4.5</span>
-                  <span className="text-sidebar-foreground/40">(12)</span>
+            </div>
+            
+            {/* Report count - responsive positioning */}
+            <div className="flex items-center gap-2 text-sidebar-foreground/60 flex-shrink-0">
+              <UsersIcon className="h-4 w-4" />
+              <div className="text-right">
+                <div className="text-lg sm:text-xl font-bold text-sidebar-foreground leading-none">
+                  {item.metadata?.reportCount || 1}
                 </div>
-              </div>
-
-              {/* Tags */}
-              {item.tags.length > 0 && (
-                <div className="flex gap-1 mb-4 flex-shrink-0">
-                  {item.tags.slice(0, 2).map((tag: string, index: number) => (
-                    <Badge
-                      key={index}
-                      variant="outline"
-                      className="text-xs bg-sidebar-foreground/5 text-sidebar-foreground/60 border-sidebar-foreground/15"
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
-                  {item.tags.length > 2 && (
-                    <Badge
-                      variant="outline"
-                      className="text-xs bg-sidebar-foreground/5 text-sidebar-foreground/60 border-sidebar-foreground/15"
-                    >
-                      +{item.tags.length - 2}
-                    </Badge>
-                  )}
+                <div className="text-xs leading-none">
+                  report{(item.metadata?.reportCount || 1) !== 1 ? 's' : ''}
                 </div>
-              )}
-
-              {/* Product Footer */}
-              <div className="flex items-center justify-between text-xs text-sidebar-foreground/60 flex-shrink-0 pt-3 border-t border-sidebar-border">
-                <div className="flex items-center gap-1">
-                  <CalendarIcon className="h-3 w-3" />
-                  <span>Listed {formatDate(item.created_at)}</span>
-                </div>
-                <span className="text-sidebar-foreground/40">#{item.id.slice(-6)}</span>
               </div>
             </div>
-          </Card>
-        )
+          </div>
 
-      default:
-        return null
-    }
-  }
+          {/* Title and description */}
+          <div className="space-y-2">
+            <h3 className="text-sidebar-foreground font-semibold text-base sm:text-lg line-clamp-2 leading-tight">
+              {item.title}
+            </h3>
+            <p className="text-sidebar-foreground/70 text-sm line-clamp-2 leading-relaxed">
+              {item.description}
+            </p>
+          </div>
 
-  const resetForm = () => {
-    setFormData({
-      title: '',
-      description: '',
-      content: '',
-      tags: '',
-      metadata: {}
-    })
-    setAddType('context')
-  }
+          {/* Footer with responsive layout */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 border-t border-sidebar-border">
+            <div className="flex items-center gap-4 text-xs text-sidebar-foreground/60">
+              <div className="flex items-center gap-1">
+                <CalendarIcon className="h-3 w-3 flex-shrink-0" />
+                <span className="truncate">
+                  {new Date(item.created_at).toLocaleDateString()}
+                </span>
+              </div>
+              <div className="flex items-center gap-1">
+                <TrendingUpIcon className="h-3 w-3 flex-shrink-0" />
+                <span className="truncate">
+                  {item.metadata?.status || 'Active'}
+                </span>
+              </div>
+            </div>
+            {item.metadata?.ticketId && (
+              <div className="text-xs text-sidebar-foreground/60 font-mono">
+                {item.metadata.ticketId}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </Card>
+  )
 
-  const handleOpenAddDialog = () => {
-    resetForm()
-    setIsAddDialogOpen(true)
-  }
+  const renderInquiryCard = (item: typeof data[0]) => (
+    <Card
+      key={item.id}
+      className="bg-sidebar-accent border-sidebar-border hover:border-sidebar-foreground/20 transition-all duration-200 cursor-pointer p-4 sm:p-6"
+    >
+      <div className="space-y-4">
+        {/* Header with responsive layout */}
+        <div className="flex items-start gap-3">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-sidebar-border flex items-center justify-center flex-shrink-0">
+            <UserIcon className="h-4 w-4 sm:h-5 sm:w-5 text-sidebar-foreground/70" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+              <div className="flex flex-wrap items-center gap-2 text-sm text-sidebar-foreground/70">
+                <span className="font-medium truncate">
+                  {item.metadata?.author || 'community'}
+                </span>
+                <span className="hidden sm:inline">•</span>
+                <span className="text-xs sm:text-sm truncate">
+                  {new Date(item.created_at).toLocaleDateString()}
+                </span>
+              </div>
+              <Button variant="ghost" size="icon" className="h-6 w-6 sm:h-8 sm:w-8 text-sidebar-foreground/60 hover:text-sidebar-foreground flex-shrink-0 self-start sm:self-center">
+                <MoreVerticalIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+              </Button>
+            </div>
+            <div className="mt-1">
+              <Badge variant="outline" className="text-xs bg-sidebar-foreground/10 text-sidebar-foreground/70 border-sidebar-foreground/20">
+                Discussion
+              </Badge>
+            </div>
+          </div>
+        </div>
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (!formData.title.trim()) {
-      toast.error('Please enter a title')
-      return
-    }
+        {/* Content */}
+        <div className="space-y-3">
+          <h3 className="text-sidebar-foreground font-semibold text-base sm:text-lg line-clamp-2 leading-tight">
+            {item.title}
+          </h3>
+          <p className="text-sidebar-foreground/70 text-sm line-clamp-3 leading-relaxed">
+            {item.description}
+          </p>
+        </div>
 
-    if (!selectedProject) {
-      toast.error('Please select a project')
-      return
-    }
+        {/* Actions with responsive layout */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 border-t border-sidebar-border">
+          <div className="flex items-center gap-4 sm:gap-6">
+            <Button variant="ghost" size="sm" className="h-8 px-2 text-sidebar-foreground/60 hover:text-sidebar-foreground">
+              <ArrowUpIcon className="h-3 w-3 mr-1" />
+              <span className="text-xs">Upvote</span>
+            </Button>
+            <Button variant="ghost" size="sm" className="h-8 px-2 text-sidebar-foreground/60 hover:text-sidebar-foreground">
+              <MessageCircleIcon className="h-3 w-3 mr-1" />
+              <span className="text-xs">Reply</span>
+            </Button>
+            <Button variant="ghost" size="sm" className="h-8 px-2 text-sidebar-foreground/60 hover:text-sidebar-foreground">
+              <ShareIcon className="h-3 w-3 mr-1" />
+              <span className="text-xs">Share</span>
+            </Button>
+          </div>
+          
+          {/* Tags - responsive positioning */}
+          {item.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {item.tags.slice(0, 2).map((tag, index) => (
+                <Badge
+                  key={index}
+                  variant="outline"
+                  className="text-xs bg-sidebar-foreground/5 text-sidebar-foreground/60 border-sidebar-foreground/10"
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </Card>
+  )
 
-    setIsSubmitting(true)
-
-    try {
-      const tagsArray = formData.tags
-        .split(',')
-        .map(tag => tag.trim())
-        .filter(tag => tag.length > 0)
-
-      let metadata = { ...formData.metadata }
+  const renderProductCard = (item: typeof data[0]) => (
+    <Card
+      key={item.id}
+      className="bg-sidebar-accent border-sidebar-border hover:border-sidebar-foreground/20 transition-all duration-200 cursor-pointer overflow-hidden"
+    >
+      {/* Product image placeholder */}
+      <div className="aspect-video bg-sidebar-border flex items-center justify-center">
+        <PackageIcon className="h-12 w-12 text-sidebar-foreground/40" />
+      </div>
       
-      // Add type-specific metadata
-      if (addType === 'product' && formData.metadata.price) {
-        metadata.price = parseFloat(formData.metadata.price) || 0
-      }
-      if (addType === 'issue' && formData.metadata.priority) {
-        metadata.priority = formData.metadata.priority
-      }
+      <div className="p-6">
+        <div className="space-y-4">
+          {/* Header */}
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <h3 className="text-sidebar-foreground font-semibold text-lg line-clamp-1 mb-2">
+                {item.title}
+              </h3>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs bg-sidebar-foreground/10 text-sidebar-foreground/70 border-sidebar-foreground/20">
+                  Product
+                </Badge>
+                {item.metadata?.category && (
+                  <Badge variant="outline" className="text-xs bg-sidebar-foreground/5 text-sidebar-foreground/60 border-sidebar-foreground/10">
+                    {item.metadata.category}
+                  </Badge>
+                )}
+              </div>
+            </div>
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-sidebar-foreground/60 hover:text-sidebar-foreground flex-shrink-0">
+              <MoreVerticalIcon className="h-4 w-4" />
+            </Button>
+          </div>
 
-      const { error } = await createData({
-        title: formData.title,
-        description: formData.description || null,
-        content: formData.content || null,
-        type: addType,
-        tags: tagsArray,
-        metadata,
-        project_id: selectedProject,
-      })
+          {/* Description */}
+          <p className="text-sidebar-foreground/70 text-sm line-clamp-3 leading-relaxed">
+            {item.description}
+          </p>
 
-      if (error) {
-        toast.error(error)
-      } else {
-        toast.success(`${dataTypes.find(t => t.value === addType)?.label} added successfully`)
-        setIsAddDialogOpen(false)
-        resetForm()
-      }
-    } catch (err) {
-      toast.error('An unexpected error occurred')
-    } finally {
-      setIsSubmitting(false)
+          {/* Price and stats */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              {item.metadata?.price && (
+                <div className="flex items-center gap-1 text-sidebar-foreground font-semibold">
+                  <DollarSignIcon className="h-4 w-4" />
+                  <span>{item.metadata.price}</span>
+                </div>
+              )}
+              <div className="flex items-center gap-1 text-xs text-sidebar-foreground/60">
+                <StarIcon className="h-3 w-3" />
+                <span>{item.metadata?.rating || '4.5'}</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" className="h-8 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80">
+                <EyeIcon className="h-3 w-3 mr-1" />
+                View
+              </Button>
+              <Button size="sm" className="h-8 bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90">
+                <ShoppingCartIcon className="h-3 w-3 mr-1" />
+                Add
+              </Button>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="flex items-center justify-between pt-3 border-t border-sidebar-border text-xs text-sidebar-foreground/60">
+            <div className="flex items-center gap-1">
+              <CalendarIcon className="h-3 w-3" />
+              <span>Added {new Date(item.created_at).toLocaleDateString()}</span>
+            </div>
+            {item.metadata?.inStock !== undefined && (
+              <span className={item.metadata.inStock ? 'text-green-600' : 'text-red-600'}>
+                {item.metadata.inStock ? 'In Stock' : 'Out of Stock'}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </Card>
+  )
+
+  const renderSkeletonCard = (type: string) => {
+    if (type === 'context') {
+      return (
+        <Card className="bg-sidebar-accent border-sidebar-border p-6 animate-pulse">
+          <div className="space-y-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-center gap-3 flex-1">
+                <div className="w-10 h-10 rounded-lg bg-sidebar-border" />
+                <div className="flex-1">
+                  <div className="h-4 bg-sidebar-border rounded mb-2 w-3/4" />
+                  <div className="h-3 bg-sidebar-border rounded w-1/2" />
+                </div>
+              </div>
+              <div className="w-8 h-8 bg-sidebar-border rounded" />
+            </div>
+            <div className="space-y-2">
+              <div className="h-3 bg-sidebar-border rounded w-full" />
+              <div className="h-3 bg-sidebar-border rounded w-2/3" />
+            </div>
+            <div className="flex gap-2">
+              <div className="h-6 bg-sidebar-border rounded w-16" />
+              <div className="h-6 bg-sidebar-border rounded w-20" />
+            </div>
+          </div>
+        </Card>
+      )
+    }
+
+    if (type === 'issues') {
+      return (
+        <Card className="bg-sidebar-accent border-sidebar-border overflow-hidden animate-pulse">
+          <div className="h-1 bg-sidebar-border w-full" />
+          <div className="p-4 sm:p-6">
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                <div className="flex items-start gap-3 flex-1">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-sidebar-border flex-shrink-0" />
+                  <div className="flex-1">
+                    <div className="flex gap-2 mb-2">
+                      <div className="h-5 bg-sidebar-border rounded w-12" />
+                      <div className="h-5 bg-sidebar-border rounded w-16" />
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-sidebar-border rounded" />
+                  <div className="text-right">
+                    <div className="h-6 bg-sidebar-border rounded w-8 mb-1" />
+                    <div className="h-3 bg-sidebar-border rounded w-12" />
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="h-5 bg-sidebar-border rounded w-3/4" />
+                <div className="h-4 bg-sidebar-border rounded w-full" />
+                <div className="h-4 bg-sidebar-border rounded w-2/3" />
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 border-t border-sidebar-border">
+                <div className="flex gap-4">
+                  <div className="h-3 bg-sidebar-border rounded w-16" />
+                  <div className="h-3 bg-sidebar-border rounded w-12" />
+                </div>
+                <div className="h-3 bg-sidebar-border rounded w-16" />
+              </div>
+            </div>
+          </div>
+        </Card>
+      )
+    }
+
+    if (type === 'inquiries') {
+      return (
+        <Card className="bg-sidebar-accent border-sidebar-border p-4 sm:p-6 animate-pulse">
+          <div className="space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-sidebar-border flex-shrink-0" />
+              <div className="flex-1">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div className="flex gap-2">
+                    <div className="h-4 bg-sidebar-border rounded w-20" />
+                    <div className="h-4 bg-sidebar-border rounded w-16" />
+                  </div>
+                  <div className="w-6 h-6 bg-sidebar-border rounded" />
+                </div>
+                <div className="h-5 bg-sidebar-border rounded w-16 mt-1" />
+              </div>
+            </div>
+            <div className="space-y-3">
+              <div className="h-5 bg-sidebar-border rounded w-3/4" />
+              <div className="h-4 bg-sidebar-border rounded w-full" />
+              <div className="h-4 bg-sidebar-border rounded w-5/6" />
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 border-t border-sidebar-border">
+              <div className="flex gap-4">
+                <div className="h-6 bg-sidebar-border rounded w-16" />
+                <div className="h-6 bg-sidebar-border rounded w-12" />
+                <div className="h-6 bg-sidebar-border rounded w-14" />
+              </div>
+              <div className="flex gap-1">
+                <div className="h-5 bg-sidebar-border rounded w-12" />
+                <div className="h-5 bg-sidebar-border rounded w-16" />
+              </div>
+            </div>
+          </div>
+        </Card>
+      )
+    }
+
+    if (type === 'products') {
+      return (
+        <Card className="bg-sidebar-accent border-sidebar-border overflow-hidden animate-pulse">
+          <div className="aspect-video bg-sidebar-border" />
+          <div className="p-6">
+            <div className="space-y-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <div className="h-6 bg-sidebar-border rounded w-3/4 mb-2" />
+                  <div className="flex gap-2">
+                    <div className="h-5 bg-sidebar-border rounded w-16" />
+                    <div className="h-5 bg-sidebar-border rounded w-20" />
+                  </div>
+                </div>
+                <div className="w-8 h-8 bg-sidebar-border rounded" />
+              </div>
+              <div className="space-y-2">
+                <div className="h-4 bg-sidebar-border rounded w-full" />
+                <div className="h-4 bg-sidebar-border rounded w-2/3" />
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex gap-4">
+                  <div className="h-5 bg-sidebar-border rounded w-12" />
+                  <div className="h-4 bg-sidebar-border rounded w-8" />
+                </div>
+                <div className="flex gap-2">
+                  <div className="h-8 bg-sidebar-border rounded w-16" />
+                  <div className="h-8 bg-sidebar-border rounded w-12" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </Card>
+      )
+    }
+
+    return null
+  }
+
+  const renderDataCard = (item: typeof data[0]) => {
+    switch (item.type) {
+      case 'context':
+        return renderContextCard(item)
+      case 'issues':
+        return renderIssueCard(item)
+      case 'inquiries':
+        return renderInquiryCard(item)
+      case 'products':
+        return renderProductCard(item)
+      default:
+        return renderContextCard(item)
     }
   }
 
-  const handleDelete = async (id: string, title: string) => {
-    if (confirm(`Are you sure you want to delete "${title}"?`)) {
-      const { error } = await deleteData(id)
-      if (error) {
-        toast.error(error)
-      } else {
-        toast.success('Item deleted successfully')
-      }
-    }
+  if (showCreateForm) {
+    return (
+      <div className="flex flex-col h-full w-full max-w-full overflow-hidden bg-background">
+        <div className="flex-1 overflow-y-auto min-h-0">
+          <div className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+            <div className="max-w-2xl mx-auto">
+              <div className="mb-8">
+                <h1 className="text-2xl font-bold text-sidebar-foreground mb-2">
+                  Add New {dataTypes.find(t => t.id === selectedType)?.name}
+                </h1>
+                <p className="text-sidebar-foreground/70">
+                  Create a new {selectedType} entry for your knowledge base
+                </p>
+              </div>
+              
+              <Card className="bg-sidebar-accent border-sidebar-border p-6">
+                <p className="text-sidebar-foreground/70 text-center py-8">
+                  Create form for {selectedType} will be implemented here
+                </p>
+                <div className="flex gap-3 justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowCreateForm(false)}
+                    className="bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
+                  >
+                    Cancel
+                  </Button>
+                  <Button className="bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90">
+                    Create {dataTypes.find(t => t.id === selectedType)?.name}
+                  </Button>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
-
-  const getTypeIcon = (type: string) => {
-    const typeConfig = dataTypes.find(t => t.value === type)
-    return typeConfig?.icon || FileTextIcon
-  }
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    })
-  }
-
-  // Set default project if only one exists
-  useEffect(() => {
-    if (projects.length === 1 && !selectedProject) {
-      setSelectedProject(projects[0].id)
-    }
-  }, [projects, selectedProject])
-
-  const selectedProjectName = projects.find(p => p.id === selectedProject)?.name || 'Select Project'
 
   return (
     <div className="flex flex-col h-full w-full max-w-full overflow-hidden bg-background">
       <div className="flex-1 overflow-y-auto min-h-0">
-        <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <div className="max-w-7xl mx-auto">
             {/* Header */}
             <div className="mb-8">
-              {/* Project Dropdown and Description */}
-              <div className="mb-6">
-                <div className="mb-2">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        className="p-0 h-auto text-left justify-start hover:bg-transparent"
-                      >
-                        <h1 className="text-xl font-semibold text-sidebar-foreground">
-                          {selectedProjectName}
-                        </h1>
-                        <ChevronDownIcon className="h-5 w-5 ml-2 text-sidebar-foreground/60" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="min-w-[200px]">
-                      {projects.map((project) => (
-                        <DropdownMenuItem 
-                          key={project.id} 
-                          onClick={() => setSelectedProject(project.id)}
-                          className={selectedProject === project.id ? "bg-sidebar-accent" : ""}
-                        >
-                          {project.name}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-semibold text-sidebar-foreground mb-2">
+                    Data Library
+                  </h1>
+                  <p className="text-sidebar-foreground/70">
+                    Manage your knowledge base with context, issues, inquiries, and products
+                  </p>
                 </div>
-                <p className="text-sidebar-foreground/70">
-                  Manage your knowledge base, issues, inquiries, and product information
-                </p>
-              </div>
-
-              {/* Search and Add Data Button */}
-              <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                <div className="relative flex-1 max-w-md">
-                  <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-sidebar-foreground/40" />
-                  <Input
-                    placeholder="Search data..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-sidebar-accent border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/40"
-                  />
-                </div>
-                
                 <Button
-                  onClick={handleOpenAddDialog}
-                  className="bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90 flex-shrink-0"
+                  onClick={() => setShowCreateForm(true)}
+                  className="bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90"
                 >
                   <PlusIcon className="h-4 w-4 mr-2" />
-                  Add Data
+                  Add {dataTypes.find(t => t.id === selectedType)?.name}
                 </Button>
               </div>
 
-              {/* Filter Tabs */}
-              <div className="flex items-center gap-2 overflow-x-auto">
-                {filterTabs.map((tab) => (
+              {/* Search */}
+              <div className="relative max-w-md mb-6">
+                <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-sidebar-foreground/40" />
+                <Input
+                  placeholder="Search data..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 bg-sidebar-accent border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/40"
+                />
+              </div>
+
+              {/* Type Filters */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-2">
+                {dataTypes.map((type) => (
                   <Button
-                    key={tab.value}
-                    variant={activeFilter === tab.value ? "default" : "ghost"}
+                    key={type.id}
+                    variant={selectedType === type.id ? "default" : "ghost"}
                     size="sm"
-                    onClick={() => setActiveFilter(tab.value)}
+                    onClick={() => setSelectedType(type.id as any)}
                     className={`whitespace-nowrap flex-shrink-0 ${
-                      activeFilter === tab.value
+                      selectedType === type.id
                         ? "bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90"
                         : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
                     }`}
                   >
-                    {tab.name}
+                    <type.icon className="h-4 w-4 mr-2" />
+                    {type.name}
                   </Button>
                 ))}
               </div>
             </div>
 
             {/* Content */}
-            {!selectedProject ? (
-              <div className="text-center py-12">
-                <div className="bg-sidebar-accent rounded-lg p-8 max-w-md mx-auto">
-                  <div className="text-4xl mb-4">📚</div>
-                  <h3 className="text-sidebar-foreground text-lg font-semibold mb-2">
-                    Select a Project
-                  </h3>
-                  <p className="text-sidebar-foreground/70 mb-4">
-                    Choose a project to view and manage its data library
-                  </p>
-                </div>
-              </div>
-            ) : loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {getSkeletonTypes().map((type, index) => (
+            {loading ? (
+              <div className={`grid gap-6 ${
+                selectedType === 'context' ? 'grid-cols-1 lg:grid-cols-2' :
+                selectedType === 'issues' ? 'grid-cols-1 lg:grid-cols-2 xl:grid-cols-3' :
+                selectedType === 'inquiries' ? 'grid-cols-1 lg:grid-cols-2' :
+                'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+              }`}>
+                {Array.from({ length: 6 }).map((_, index) => (
                   <div key={index}>
-                    {renderSkeletonByType(type)}
+                    {renderSkeletonCard(selectedType)}
                   </div>
                 ))}
               </div>
+            ) : error ? (
+              <div className="text-center py-12">
+                <div className="bg-sidebar-accent rounded-lg p-8 max-w-md mx-auto">
+                  <div className="text-4xl mb-4">⚠️</div>
+                  <h3 className="text-sidebar-foreground text-lg font-semibold mb-2">
+                    Error Loading Data
+                  </h3>
+                  <p className="text-sidebar-foreground/70 mb-4">
+                    {error}
+                  </p>
+                  <Button
+                    onClick={() => window.location.reload()}
+                    className="bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90"
+                  >
+                    Try Again
+                  </Button>
+                </div>
+              </div>
             ) : filteredData.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredData.map((item) => renderDataItem(item))}
+              <div className={`grid gap-6 ${
+                selectedType === 'context' ? 'grid-cols-1 lg:grid-cols-2' :
+                selectedType === 'issues' ? 'grid-cols-1 lg:grid-cols-2 xl:grid-cols-3' :
+                selectedType === 'inquiries' ? 'grid-cols-1 lg:grid-cols-2' :
+                'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+              }`}>
+                {filteredData.map(renderDataCard)}
               </div>
             ) : (
               <div className="text-center py-12">
                 <div className="bg-sidebar-accent rounded-lg p-8 max-w-md mx-auto">
-                  <div className="text-4xl mb-4">📝</div>
+                  <div className="text-4xl mb-4">
+                    {selectedType === 'context' ? '📚' :
+                     selectedType === 'issues' ? '🐛' :
+                     selectedType === 'inquiries' ? '💬' :
+                     '📦'}
+                  </div>
                   <h3 className="text-sidebar-foreground text-lg font-semibold mb-2">
-                    No {activeFilter} found
+                    No {dataTypes.find(t => t.id === selectedType)?.name} Found
                   </h3>
-                  <p className="text-sidebar-foreground/70 mb-6">
-                    {searchTerm
-                      ? `No ${activeFilter} items match your search criteria.`
-                      : `Start building your ${activeFilter} library by adding some content.`
+                  <p className="text-sidebar-foreground/70 mb-4">
+                    {searchTerm 
+                      ? `No ${selectedType} match your search criteria.`
+                      : `You haven't added any ${selectedType} yet.`
                     }
                   </p>
                   {!searchTerm && (
                     <Button
-                      onClick={() => {
-                        setAddType(activeFilter as any)
-                        handleOpenAddDialog()
-                      }}
+                      onClick={() => setShowCreateForm(true)}
                       className="bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90"
                     >
                       <PlusIcon className="h-4 w-4 mr-2" />
-                      Add {dataTypes.find(t => t.value === activeFilter)?.label}
+                      Add Your First {dataTypes.find(t => t.id === selectedType)?.name}
                     </Button>
                   )}
                 </div>
@@ -993,178 +723,6 @@ export function KnowledgeBase() {
           </div>
         </div>
       </div>
-
-      {/* Add Data Dialog */}
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="bg-sidebar border-sidebar-border max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-sidebar-foreground flex items-center gap-2">
-              <PlusIcon className="h-5 w-5" />
-              Add Data
-            </DialogTitle>
-          </DialogHeader>
-
-          <form onSubmit={handleSubmit} className="space-y-6 mt-6">
-            {/* Type Selection */}
-            <div className="space-y-2">
-              <Label htmlFor="type" className="text-sidebar-foreground font-medium">
-                Type *
-              </Label>
-              <Select value={addType} onValueChange={(value: any) => setAddType(value)}>
-                <SelectTrigger className="bg-sidebar-accent border-sidebar-border text-sidebar-foreground focus:ring-2 focus:ring-blue-500">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {dataTypes.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>
-                      <div className="flex items-center gap-2">
-                        <type.icon className="h-4 w-4" />
-                        <span>{type.label}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Title */}
-            <div className="space-y-2">
-              <Label htmlFor="title" className="text-sidebar-foreground font-medium">
-                Title *
-              </Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                placeholder={`Enter ${addType} title...`}
-                className="bg-sidebar-accent border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-            </div>
-
-            {/* Description */}
-            <div className="space-y-2">
-              <Label htmlFor="description" className="text-sidebar-foreground font-medium">
-                Description
-              </Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder={`Brief description of this ${addType}...`}
-                className="min-h-[80px] bg-sidebar-accent border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/50 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-              />
-            </div>
-
-            {/* Content */}
-            <div className="space-y-2">
-              <Label htmlFor="content" className="text-sidebar-foreground font-medium">
-                Content
-              </Label>
-              <Textarea
-                id="content"
-                value={formData.content}
-                onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                placeholder={`Detailed content for this ${addType}...`}
-                className="min-h-[120px] bg-sidebar-accent border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/50 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-              />
-            </div>
-
-            {/* Tags */}
-            <div className="space-y-2">
-              <Label htmlFor="tags" className="text-sidebar-foreground font-medium">
-                Tags
-              </Label>
-              <Input
-                id="tags"
-                value={formData.tags}
-                onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
-                placeholder="Enter tags separated by commas..."
-                className="bg-sidebar-accent border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <p className="text-xs text-sidebar-foreground/60">
-                Separate multiple tags with commas (e.g., important, documentation, api)
-              </p>
-            </div>
-
-            {/* Type-specific fields */}
-            {addType === 'product' && (
-              <div className="space-y-2">
-                <Label htmlFor="price" className="text-sidebar-foreground font-medium">
-                  Price
-                </Label>
-                <Input
-                  id="price"
-                  type="number"
-                  step="0.01"
-                  value={formData.metadata.price || ''}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    metadata: { ...prev.metadata, price: e.target.value }
-                  }))}
-                  placeholder="0.00"
-                  className="bg-sidebar-accent border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-            )}
-
-            {addType === 'issue' && (
-              <div className="space-y-2">
-                <Label htmlFor="priority" className="text-sidebar-foreground font-medium">
-                  Priority
-                </Label>
-                <Select
-                  value={formData.metadata.priority || ''}
-                  onValueChange={(value) => setFormData(prev => ({ 
-                    ...prev, 
-                    metadata: { ...prev.metadata, priority: value }
-                  }))}
-                >
-                  <SelectTrigger className="bg-sidebar-accent border-sidebar-border text-sidebar-foreground focus:ring-2 focus:ring-blue-500">
-                    <SelectValue placeholder="Select priority" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="critical">Critical</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            {/* Form Actions */}
-            <div className="flex items-center justify-end gap-3 pt-6 border-t border-sidebar-border">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsAddDialogOpen(false)}
-                className="bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
-              >
-                <XIcon className="h-4 w-4 mr-2" />
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={isSubmitting || !formData.title.trim()}
-                className="bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90 disabled:opacity-50"
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-sidebar border-t-transparent rounded-full animate-spin mr-2"></div>
-                    Adding...
-                  </>
-                ) : (
-                  <>
-                    <SaveIcon className="h-4 w-4 mr-2" />
-                    Add {dataTypes.find(t => t.value === addType)?.label}
-                  </>
-                )}
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }
