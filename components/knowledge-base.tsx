@@ -26,7 +26,14 @@ import {
   ArrowDownIcon,
   ClockIcon,
   UserIcon,
-  UsersIcon
+  UsersIcon,
+  BookOpenIcon,
+  ShieldAlertIcon,
+  HelpCircleIcon,
+  StarIcon,
+  TrendingUpIcon,
+  CheckCircleIcon,
+  AlertTriangleIcon
 } from "lucide-react"
 
 import { Button } from '@/components/ui/button'
@@ -105,117 +112,150 @@ export function KnowledgeBase() {
     })
   }, [data, searchTerm])
 
-  // Type-specific skeleton loaders with professional neutral designs
+  // Enhanced skeleton loaders with sophisticated designs
   const renderSkeletonByType = (type: string) => {
     const baseSkeletonClasses = "animate-pulse"
     
     switch (type) {
       case 'context':
-        // Square design - Knowledge base style
+        // Knowledge Base Card - Document style with sidebar
         return (
-          <Card className="bg-sidebar-accent border-sidebar-border p-6 h-64">
+          <Card className="bg-sidebar-accent border-sidebar-border h-72 overflow-hidden">
             <div className={baseSkeletonClasses}>
-              {/* Header with icon and badge */}
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-sidebar-border rounded-lg"></div>
-                  <div className="w-16 h-5 bg-sidebar-border rounded-full"></div>
+              {/* Header with document icon and metadata */}
+              <div className="bg-sidebar-foreground/5 p-4 border-b border-sidebar-border">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-sidebar-border rounded-lg flex items-center justify-center">
+                      <div className="w-5 h-5 bg-sidebar-border rounded"></div>
+                    </div>
+                    <div>
+                      <div className="h-4 bg-sidebar-border rounded w-24 mb-1"></div>
+                      <div className="h-3 bg-sidebar-border rounded w-16"></div>
+                    </div>
+                  </div>
+                  <div className="w-6 h-6 bg-sidebar-border rounded"></div>
                 </div>
-                <div className="w-6 h-6 bg-sidebar-border rounded"></div>
               </div>
               
-              {/* Title */}
-              <div className="h-5 bg-sidebar-border rounded w-4/5 mb-3"></div>
-              
-              {/* Description - longer for context */}
-              <div className="space-y-2 mb-4">
-                <div className="h-3 bg-sidebar-border rounded w-full"></div>
-                <div className="h-3 bg-sidebar-border rounded w-full"></div>
-                <div className="h-3 bg-sidebar-border rounded w-3/4"></div>
-              </div>
-              
-              {/* Tags */}
-              <div className="flex gap-1 mb-4">
-                <div className="h-5 bg-sidebar-border rounded-full w-20"></div>
-                <div className="h-5 bg-sidebar-border rounded-full w-16"></div>
-              </div>
-              
-              {/* Footer */}
-              <div className="flex items-center justify-between">
-                <div className="h-3 bg-sidebar-border rounded w-20"></div>
-                <div className="h-3 bg-sidebar-border rounded w-12"></div>
+              {/* Content area */}
+              <div className="p-4">
+                <div className="h-5 bg-sidebar-border rounded w-4/5 mb-3"></div>
+                
+                <div className="space-y-2 mb-4">
+                  <div className="h-3 bg-sidebar-border rounded w-full"></div>
+                  <div className="h-3 bg-sidebar-border rounded w-full"></div>
+                  <div className="h-3 bg-sidebar-border rounded w-3/4"></div>
+                </div>
+                
+                {/* Tags section */}
+                <div className="flex gap-2 mb-4">
+                  <div className="h-5 bg-sidebar-border rounded-full w-16"></div>
+                  <div className="h-5 bg-sidebar-border rounded-full w-20"></div>
+                  <div className="h-5 bg-sidebar-border rounded-full w-14"></div>
+                </div>
+                
+                {/* Footer with stats */}
+                <div className="flex items-center justify-between pt-3 border-t border-sidebar-border">
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 bg-sidebar-border rounded"></div>
+                    <div className="h-3 bg-sidebar-border rounded w-20"></div>
+                  </div>
+                  <div className="h-3 bg-sidebar-border rounded w-12"></div>
+                </div>
               </div>
             </div>
           </Card>
         )
       
       case 'issue':
-        // Rectangle design - Issue tracker style
+        // Issue Tracker Card - Compact with status indicators
         return (
-          <Card className="bg-sidebar-accent border-sidebar-border p-4 h-36">
+          <Card className="bg-sidebar-accent border-sidebar-border h-44 border-l-4 border-l-sidebar-border">
             <div className={baseSkeletonClasses}>
-              {/* Header with issue number and priority */}
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 bg-sidebar-border rounded"></div>
-                  <div className="w-12 h-4 bg-sidebar-border rounded-full"></div>
-                  <div className="w-16 h-4 bg-sidebar-border rounded-full"></div>
+              {/* Issue header */}
+              <div className="p-4 pb-3">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 bg-sidebar-border rounded-full"></div>
+                    <div className="h-4 bg-sidebar-border rounded w-16"></div>
+                    <div className="h-4 bg-sidebar-border rounded-full w-12"></div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-4 bg-sidebar-border rounded"></div>
+                    <div className="w-5 h-5 bg-sidebar-border rounded"></div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-4 bg-sidebar-border rounded"></div>
-                  <div className="w-5 h-5 bg-sidebar-border rounded"></div>
+                
+                <div className="h-5 bg-sidebar-border rounded w-5/6 mb-3"></div>
+                
+                <div className="space-y-2 mb-4">
+                  <div className="h-3 bg-sidebar-border rounded w-full"></div>
+                  <div className="h-3 bg-sidebar-border rounded w-4/5"></div>
                 </div>
               </div>
               
-              {/* Title */}
-              <div className="h-4 bg-sidebar-border rounded w-3/4 mb-3"></div>
-              
-              {/* Description */}
-              <div className="h-3 bg-sidebar-border rounded w-full mb-3"></div>
-              
-              {/* Footer with reports and date */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-sidebar-border rounded"></div>
+              {/* Issue footer */}
+              <div className="px-4 pb-4">
+                <div className="flex items-center justify-between pt-3 border-t border-sidebar-border">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1">
+                      <div className="w-4 h-4 bg-sidebar-border rounded"></div>
+                      <div className="h-3 bg-sidebar-border rounded w-8"></div>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-4 h-4 bg-sidebar-border rounded"></div>
+                      <div className="h-3 bg-sidebar-border rounded w-12"></div>
+                    </div>
+                  </div>
                   <div className="h-3 bg-sidebar-border rounded w-16"></div>
                 </div>
-                <div className="h-3 bg-sidebar-border rounded w-16"></div>
               </div>
             </div>
           </Card>
         )
       
       case 'inquiry':
-        // Reddit post style - Discussion format
+        // Discussion Card - Forum/Reddit style
         return (
-          <Card className="bg-sidebar-accent border-sidebar-border border-l-4 border-l-sidebar-foreground/20 p-4 h-40">
+          <Card className="bg-sidebar-accent border-sidebar-border h-48">
             <div className={baseSkeletonClasses}>
-              {/* Post header */}
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-6 h-6 bg-sidebar-border rounded-full"></div>
-                <div className="w-20 h-3 bg-sidebar-border rounded"></div>
-                <div className="w-1 h-1 bg-sidebar-border rounded-full"></div>
-                <div className="w-16 h-3 bg-sidebar-border rounded"></div>
-              </div>
-              
-              {/* Title */}
-              <div className="h-4 bg-sidebar-border rounded w-5/6 mb-3"></div>
-              
-              {/* Content preview */}
-              <div className="space-y-2 mb-4">
-                <div className="h-3 bg-sidebar-border rounded w-full"></div>
-                <div className="h-3 bg-sidebar-border rounded w-4/5"></div>
-              </div>
-              
-              {/* Interaction bar */}
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1">
-                  <div className="w-4 h-4 bg-sidebar-border rounded"></div>
-                  <div className="w-8 h-3 bg-sidebar-border rounded"></div>
+              {/* Discussion header */}
+              <div className="p-4 border-b border-sidebar-border">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-8 h-8 bg-sidebar-border rounded-full"></div>
+                  <div>
+                    <div className="h-3 bg-sidebar-border rounded w-20 mb-1"></div>
+                    <div className="h-3 bg-sidebar-border rounded w-16"></div>
+                  </div>
+                  <div className="ml-auto w-6 h-6 bg-sidebar-border rounded"></div>
                 </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-4 h-4 bg-sidebar-border rounded"></div>
-                  <div className="w-12 h-3 bg-sidebar-border rounded"></div>
+                
+                <div className="h-5 bg-sidebar-border rounded w-4/5"></div>
+              </div>
+              
+              {/* Discussion content */}
+              <div className="p-4">
+                <div className="space-y-2 mb-4">
+                  <div className="h-3 bg-sidebar-border rounded w-full"></div>
+                  <div className="h-3 bg-sidebar-border rounded w-full"></div>
+                  <div className="h-3 bg-sidebar-border rounded w-3/4"></div>
+                </div>
+                
+                {/* Interaction bar */}
+                <div className="flex items-center gap-6 pt-3 border-t border-sidebar-border">
+                  <div className="flex items-center gap-1">
+                    <div className="w-4 h-4 bg-sidebar-border rounded"></div>
+                    <div className="h-3 bg-sidebar-border rounded w-8"></div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-4 h-4 bg-sidebar-border rounded"></div>
+                    <div className="h-3 bg-sidebar-border rounded w-12"></div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-4 h-4 bg-sidebar-border rounded"></div>
+                    <div className="h-3 bg-sidebar-border rounded w-10"></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -223,44 +263,50 @@ export function KnowledgeBase() {
         )
       
       case 'product':
-        // Bigger square - Product showcase style
+        // Product Showcase Card - E-commerce style
         return (
-          <Card className="bg-sidebar-accent border-sidebar-border p-6 h-80">
+          <Card className="bg-sidebar-accent border-sidebar-border h-96 overflow-hidden">
             <div className={baseSkeletonClasses}>
-              {/* Product image placeholder */}
-              <div className="w-full h-32 bg-sidebar-border rounded-lg mb-4"></div>
+              {/* Product image */}
+              <div className="h-40 bg-sidebar-border"></div>
               
-              {/* Header with product badge */}
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 bg-sidebar-border rounded"></div>
-                  <div className="w-16 h-4 bg-sidebar-border rounded-full"></div>
+              {/* Product info */}
+              <div className="p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 bg-sidebar-border rounded"></div>
+                    <div className="h-4 bg-sidebar-border rounded-full w-16"></div>
+                  </div>
+                  <div className="w-5 h-5 bg-sidebar-border rounded"></div>
                 </div>
-                <div className="w-5 h-5 bg-sidebar-border rounded"></div>
-              </div>
-              
-              {/* Product name */}
-              <div className="h-5 bg-sidebar-border rounded w-2/3 mb-3"></div>
-              
-              {/* Description */}
-              <div className="space-y-2 mb-4">
-                <div className="h-3 bg-sidebar-border rounded w-full"></div>
-                <div className="h-3 bg-sidebar-border rounded w-3/4"></div>
-              </div>
-              
-              {/* Price and tags */}
-              <div className="flex items-center justify-between mb-3">
-                <div className="h-6 bg-sidebar-border rounded w-16"></div>
-                <div className="flex gap-1">
-                  <div className="h-4 bg-sidebar-border rounded-full w-12"></div>
-                  <div className="h-4 bg-sidebar-border rounded-full w-14"></div>
+                
+                <div className="h-6 bg-sidebar-border rounded w-3/4 mb-3"></div>
+                
+                <div className="space-y-2 mb-4">
+                  <div className="h-3 bg-sidebar-border rounded w-full"></div>
+                  <div className="h-3 bg-sidebar-border rounded w-4/5"></div>
                 </div>
-              </div>
-              
-              {/* Footer */}
-              <div className="flex items-center justify-between">
-                <div className="h-3 bg-sidebar-border rounded w-20"></div>
-                <div className="h-3 bg-sidebar-border rounded w-10"></div>
+                
+                {/* Price and rating */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="h-7 bg-sidebar-border rounded w-20"></div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-4 h-4 bg-sidebar-border rounded"></div>
+                    <div className="h-3 bg-sidebar-border rounded w-8"></div>
+                  </div>
+                </div>
+                
+                {/* Tags */}
+                <div className="flex gap-1 mb-4">
+                  <div className="h-5 bg-sidebar-border rounded-full w-12"></div>
+                  <div className="h-5 bg-sidebar-border rounded-full w-16"></div>
+                </div>
+                
+                {/* Footer */}
+                <div className="flex items-center justify-between pt-3 border-t border-sidebar-border">
+                  <div className="h-3 bg-sidebar-border rounded w-20"></div>
+                  <div className="h-3 bg-sidebar-border rounded w-12"></div>
+                </div>
               </div>
             </div>
           </Card>
@@ -315,184 +361,226 @@ export function KnowledgeBase() {
     return Math.abs(hash % 50) + 1 // 1-50 reports
   }
 
-  // Render data items with professional neutral designs
+  // Render data items with sophisticated professional designs
   const renderDataItem = (item: any) => {
     const TypeIcon = getTypeIcon(item.type)
     
     switch (item.type) {
       case 'context':
-        // Square design - Knowledge base style
+        // Knowledge Base Card - Document style with sophisticated layout
         return (
           <Card
             key={item.id}
-            className="bg-sidebar-accent border-sidebar-border hover:border-sidebar-foreground/30 transition-all duration-200 p-6 h-64 flex flex-col group"
+            className="bg-sidebar-accent border-sidebar-border hover:border-sidebar-foreground/30 transition-all duration-200 h-72 flex flex-col group overflow-hidden"
           >
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-sidebar-foreground/10 text-sidebar-foreground group-hover:bg-sidebar-foreground/15 transition-colors">
-                  <TypeIcon className="h-4 w-4" />
+            {/* Document Header */}
+            <div className="bg-sidebar-foreground/5 p-4 border-b border-sidebar-border flex-shrink-0">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-sidebar-foreground/10 rounded-lg flex items-center justify-center group-hover:bg-sidebar-foreground/15 transition-colors">
+                    <BookOpenIcon className="h-5 w-5 text-sidebar-foreground/70" />
+                  </div>
+                  <div>
+                    <Badge variant="outline" className="text-xs bg-sidebar-foreground/10 text-sidebar-foreground/80 border-sidebar-foreground/20 mb-1">
+                      Knowledge Base
+                    </Badge>
+                    <p className="text-xs text-sidebar-foreground/60">#{item.id.slice(-6)}</p>
+                  </div>
                 </div>
-                <Badge variant="outline" className="text-xs bg-sidebar-foreground/5 text-sidebar-foreground/80 border-sidebar-foreground/20">
-                  Context
-                </Badge>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-sidebar-foreground/60 hover:text-sidebar-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                      <MoreVerticalIcon className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem>
+                      <EditIcon className="h-4 w-4 mr-2" />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => handleDelete(item.id, item.title)}
+                      className="text-red-600 focus:text-red-600"
+                    >
+                      <TrashIcon className="h-4 w-4 mr-2" />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-sidebar-foreground/60 hover:text-sidebar-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                    <MoreVerticalIcon className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>
-                    <EditIcon className="h-4 w-4 mr-2" />
-                    Edit
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => handleDelete(item.id, item.title)}
-                    className="text-red-600 focus:text-red-600"
-                  >
-                    <TrashIcon className="h-4 w-4 mr-2" />
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
 
-            <h3 className="text-sidebar-foreground font-semibold mb-3 line-clamp-2 flex-shrink-0 leading-tight">
-              {item.title}
-            </h3>
+            {/* Document Content */}
+            <div className="p-4 flex-1 flex flex-col">
+              <h3 className="text-sidebar-foreground font-semibold mb-3 line-clamp-2 flex-shrink-0 leading-tight text-lg">
+                {item.title}
+              </h3>
 
-            {item.description && (
-              <p className="text-sidebar-foreground/70 text-sm mb-4 line-clamp-3 flex-1 leading-relaxed">
-                {item.description}
-              </p>
-            )}
+              {item.description && (
+                <p className="text-sidebar-foreground/70 text-sm mb-4 line-clamp-3 flex-1 leading-relaxed">
+                  {item.description}
+                </p>
+              )}
 
-            {item.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1 mb-4 flex-shrink-0">
-                {item.tags.slice(0, 3).map((tag: string, index: number) => (
-                  <Badge
-                    key={index}
-                    variant="outline"
-                    className="text-xs bg-sidebar-foreground/5 text-sidebar-foreground/60 border-sidebar-foreground/15 hover:bg-sidebar-foreground/10 transition-colors"
-                  >
-                    {tag}
-                  </Badge>
-                ))}
-                {item.tags.length > 3 && (
-                  <Badge
-                    variant="outline"
-                    className="text-xs bg-sidebar-foreground/5 text-sidebar-foreground/60 border-sidebar-foreground/15"
-                  >
-                    +{item.tags.length - 3}
-                  </Badge>
-                )}
+              {/* Tags Section */}
+              {item.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1 mb-4 flex-shrink-0">
+                  {item.tags.slice(0, 3).map((tag: string, index: number) => (
+                    <Badge
+                      key={index}
+                      variant="outline"
+                      className="text-xs bg-sidebar-foreground/5 text-sidebar-foreground/60 border-sidebar-foreground/15 hover:bg-sidebar-foreground/10 transition-colors"
+                    >
+                      {tag}
+                    </Badge>
+                  ))}
+                  {item.tags.length > 3 && (
+                    <Badge
+                      variant="outline"
+                      className="text-xs bg-sidebar-foreground/5 text-sidebar-foreground/60 border-sidebar-foreground/15"
+                    >
+                      +{item.tags.length - 3}
+                    </Badge>
+                  )}
+                </div>
+              )}
+
+              {/* Document Footer */}
+              <div className="flex items-center justify-between text-xs text-sidebar-foreground/60 flex-shrink-0 pt-3 border-t border-sidebar-border">
+                <div className="flex items-center gap-2">
+                  <CalendarIcon className="h-3 w-3" />
+                  <span>Updated {formatDate(item.created_at)}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <FileTextIcon className="h-3 w-3" />
+                  <span>Doc</span>
+                </div>
               </div>
-            )}
-
-            <div className="flex items-center justify-between text-xs text-sidebar-foreground/60 flex-shrink-0 pt-2 border-t border-sidebar-border">
-              <div className="flex items-center gap-1">
-                <CalendarIcon className="h-3 w-3" />
-                <span>{formatDate(item.created_at)}</span>
-              </div>
-              <span className="text-sidebar-foreground/40">#{item.id.slice(-6)}</span>
             </div>
           </Card>
         )
 
       case 'issue':
-        // Rectangle design - Issue tracker style
+        // Issue Tracker Card - Compact with status indicators
         const reportCount = getReportCount(item.id)
+        const priorityConfig = {
+          critical: { color: 'border-red-500/30 bg-red-500/10 text-red-600', icon: AlertTriangleIcon },
+          high: { color: 'border-orange-500/30 bg-orange-500/10 text-orange-600', icon: AlertCircleIcon },
+          medium: { color: 'border-yellow-500/30 bg-yellow-500/10 text-yellow-600', icon: InfoIcon },
+          low: { color: 'border-sidebar-foreground/20 bg-sidebar-foreground/10 text-sidebar-foreground/70', icon: CheckCircleIcon }
+        }
+        const priority = item.metadata.priority || 'low'
+        const PriorityIcon = priorityConfig[priority as keyof typeof priorityConfig]?.icon || InfoIcon
+        
         return (
           <Card
             key={item.id}
-            className="bg-sidebar-accent border-sidebar-border hover:border-sidebar-foreground/30 transition-all duration-200 p-4 h-36 flex flex-col justify-between group"
+            className={`bg-sidebar-accent border-sidebar-border hover:border-sidebar-foreground/30 transition-all duration-200 h-44 flex flex-col group border-l-4 ${
+              priority === 'critical' ? 'border-l-red-500/50' :
+              priority === 'high' ? 'border-l-orange-500/50' :
+              priority === 'medium' ? 'border-l-yellow-500/50' :
+              'border-l-sidebar-foreground/30'
+            }`}
           >
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <div className="p-1 rounded bg-sidebar-foreground/10 text-sidebar-foreground group-hover:bg-sidebar-foreground/15 transition-colors">
-                  <TypeIcon className="h-4 w-4" />
-                </div>
-                <Badge variant="outline" className="text-xs bg-sidebar-foreground/5 text-sidebar-foreground/80 border-sidebar-foreground/20">
-                  Issue
-                </Badge>
-                {item.metadata.priority && (
+            {/* Issue Header */}
+            <div className="p-4 pb-3 flex-shrink-0">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-sidebar-foreground/10 rounded-full flex items-center justify-center group-hover:bg-sidebar-foreground/15 transition-colors">
+                    <ShieldAlertIcon className="h-3 w-3 text-sidebar-foreground/70" />
+                  </div>
+                  <Badge variant="outline" className="text-xs bg-sidebar-foreground/10 text-sidebar-foreground/80 border-sidebar-foreground/20">
+                    Issue
+                  </Badge>
                   <Badge 
                     variant="outline" 
-                    className={`text-xs ${
-                      item.metadata.priority === 'critical' ? 'bg-red-500/15 text-red-600 border-red-500/30' :
-                      item.metadata.priority === 'high' ? 'bg-orange-500/15 text-orange-600 border-orange-500/30' :
-                      item.metadata.priority === 'medium' ? 'bg-yellow-500/15 text-yellow-600 border-yellow-500/30' :
-                      'bg-sidebar-foreground/10 text-sidebar-foreground/70 border-sidebar-foreground/20'
-                    }`}
+                    className={`text-xs ${priorityConfig[priority as keyof typeof priorityConfig]?.color || 'bg-sidebar-foreground/10 text-sidebar-foreground/70 border-sidebar-foreground/20'}`}
                   >
-                    {item.metadata.priority}
+                    <PriorityIcon className="h-3 w-3 mr-1" />
+                    {priority}
                   </Badge>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1 text-xs text-sidebar-foreground/60">
-                  <UsersIcon className="h-3 w-3" />
-                  <span>{reportCount}</span>
                 </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-6 w-6 text-sidebar-foreground/60 hover:text-sidebar-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                      <MoreVerticalIcon className="h-3 w-3" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      <EditIcon className="h-4 w-4 mr-2" />
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => handleDelete(item.id, item.title)}
-                      className="text-red-600 focus:text-red-600"
-                    >
-                      <TrashIcon className="h-4 w-4 mr-2" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 text-xs text-sidebar-foreground/60 bg-sidebar-foreground/5 px-2 py-1 rounded-full">
+                    <UsersIcon className="h-3 w-3" />
+                    <span>{reportCount} reports</span>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-6 w-6 text-sidebar-foreground/60 hover:text-sidebar-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                        <MoreVerticalIcon className="h-3 w-3" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>
+                        <EditIcon className="h-4 w-4 mr-2" />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => handleDelete(item.id, item.title)}
+                        className="text-red-600 focus:text-red-600"
+                      >
+                        <TrashIcon className="h-4 w-4 mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
+
+              <h3 className="text-sidebar-foreground font-semibold text-sm line-clamp-1 mb-3 leading-tight">
+                {item.title}
+              </h3>
+
+              {item.description && (
+                <p className="text-sidebar-foreground/70 text-xs line-clamp-2 leading-relaxed flex-1">
+                  {item.description}
+                </p>
+              )}
             </div>
 
-            <h3 className="text-sidebar-foreground font-semibold text-sm line-clamp-1 mb-2 leading-tight">
-              {item.title}
-            </h3>
-
-            {item.description && (
-              <p className="text-sidebar-foreground/70 text-xs line-clamp-2 mb-3 leading-relaxed flex-1">
-                {item.description}
-              </p>
-            )}
-
-            <div className="flex items-center justify-between text-xs text-sidebar-foreground/60 pt-2 border-t border-sidebar-border">
-              <div className="flex items-center gap-1">
-                <CalendarIcon className="h-3 w-3" />
-                <span>{formatDate(item.created_at)}</span>
+            {/* Issue Footer */}
+            <div className="px-4 pb-4 mt-auto">
+              <div className="flex items-center justify-between pt-3 border-t border-sidebar-border text-xs text-sidebar-foreground/60">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-1">
+                    <CalendarIcon className="h-3 w-3" />
+                    <span>Reported {formatDate(item.created_at)}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <TrendingUpIcon className="h-3 w-3" />
+                    <span>Active</span>
+                  </div>
+                </div>
+                <span className="text-sidebar-foreground/40 font-mono">#{item.id.slice(-6)}</span>
               </div>
-              <span className="text-sidebar-foreground/40 font-mono">#{item.id.slice(-6)}</span>
             </div>
           </Card>
         )
 
       case 'inquiry':
-        // Reddit post style - Discussion format
+        // Discussion Card - Forum/Reddit style with enhanced layout
         return (
           <Card
             key={item.id}
-            className="bg-sidebar-accent border-sidebar-border border-l-4 border-l-sidebar-foreground/20 hover:border-sidebar-foreground/30 hover:border-l-sidebar-foreground/40 transition-all duration-200 p-4 h-40 flex flex-col group"
+            className="bg-sidebar-accent border-sidebar-border hover:border-sidebar-foreground/30 transition-all duration-200 h-48 flex flex-col group"
           >
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-6 h-6 bg-sidebar-foreground/10 rounded-full flex items-center justify-center group-hover:bg-sidebar-foreground/15 transition-colors">
-                <UserIcon className="h-3 w-3 text-sidebar-foreground/70" />
-              </div>
-              <span className="text-xs text-sidebar-foreground/70 font-medium">inquiry</span>
-              <span className="w-1 h-1 bg-sidebar-foreground/30 rounded-full"></span>
-              <span className="text-xs text-sidebar-foreground/60">{formatDate(item.created_at)}</span>
-              <div className="ml-auto">
+            {/* Discussion Header */}
+            <div className="p-4 border-b border-sidebar-border flex-shrink-0">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-8 h-8 bg-sidebar-foreground/10 rounded-full flex items-center justify-center group-hover:bg-sidebar-foreground/15 transition-colors">
+                  <UserIcon className="h-4 w-4 text-sidebar-foreground/70" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs text-sidebar-foreground/70 font-medium">community</span>
+                    <span className="w-1 h-1 bg-sidebar-foreground/30 rounded-full"></span>
+                    <span className="text-xs text-sidebar-foreground/60">{formatDate(item.created_at)}</span>
+                  </div>
+                  <Badge variant="outline" className="text-xs bg-sidebar-foreground/10 text-sidebar-foreground/80 border-sidebar-foreground/20">
+                    Discussion
+                  </Badge>
+                </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-6 w-6 text-sidebar-foreground/60 hover:text-sidebar-foreground opacity-0 group-hover:opacity-100 transition-opacity">
@@ -514,98 +602,119 @@ export function KnowledgeBase() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
+
+              <h3 className="text-sidebar-foreground font-semibold text-sm line-clamp-2 leading-tight">
+                {item.title}
+              </h3>
             </div>
 
-            <h3 className="text-sidebar-foreground font-semibold text-sm line-clamp-2 mb-2 flex-shrink-0 leading-tight">
-              {item.title}
-            </h3>
-
-            {item.description && (
-              <p className="text-sidebar-foreground/70 text-xs line-clamp-2 mb-3 flex-1 leading-relaxed">
-                {item.description}
-              </p>
-            )}
-
-            <div className="flex items-center gap-4 text-xs text-sidebar-foreground/60 flex-shrink-0 pt-2 border-t border-sidebar-border">
-              <div className="flex items-center gap-1 hover:text-sidebar-foreground transition-colors cursor-pointer">
-                <ArrowUpIcon className="h-3 w-3" />
-                <span>Reply</span>
-              </div>
-              <div className="flex items-center gap-1 hover:text-sidebar-foreground transition-colors cursor-pointer">
-                <MessageSquareIcon className="h-3 w-3" />
-                <span>Discuss</span>
-              </div>
-              {item.tags.length > 0 && (
-                <Badge variant="outline" className="text-xs bg-sidebar-foreground/5 text-sidebar-foreground/60 border-sidebar-foreground/15 ml-auto">
-                  {item.tags[0]}
-                </Badge>
+            {/* Discussion Content */}
+            <div className="p-4 flex-1 flex flex-col">
+              {item.description && (
+                <p className="text-sidebar-foreground/70 text-xs line-clamp-3 mb-4 flex-1 leading-relaxed">
+                  {item.description}
+                </p>
               )}
+
+              {/* Interaction Bar */}
+              <div className="flex items-center gap-6 text-xs text-sidebar-foreground/60 pt-3 border-t border-sidebar-border flex-shrink-0">
+                <div className="flex items-center gap-1 hover:text-sidebar-foreground transition-colors cursor-pointer">
+                  <ArrowUpIcon className="h-3 w-3" />
+                  <span>Upvote</span>
+                </div>
+                <div className="flex items-center gap-1 hover:text-sidebar-foreground transition-colors cursor-pointer">
+                  <MessageSquareIcon className="h-3 w-3" />
+                  <span>Reply</span>
+                </div>
+                <div className="flex items-center gap-1 hover:text-sidebar-foreground transition-colors cursor-pointer">
+                  <ExternalLinkIcon className="h-3 w-3" />
+                  <span>Share</span>
+                </div>
+                {item.tags.length > 0 && (
+                  <Badge variant="outline" className="text-xs bg-sidebar-foreground/5 text-sidebar-foreground/60 border-sidebar-foreground/15 ml-auto">
+                    {item.tags[0]}
+                  </Badge>
+                )}
+              </div>
             </div>
           </Card>
         )
 
       case 'product':
-        // Bigger square - Product showcase style
+        // Product Showcase Card - E-commerce style with enhanced layout
         return (
           <Card
             key={item.id}
-            className="bg-sidebar-accent border-sidebar-border hover:border-sidebar-foreground/30 transition-all duration-200 p-6 h-80 flex flex-col group"
+            className="bg-sidebar-accent border-sidebar-border hover:border-sidebar-foreground/30 transition-all duration-200 h-96 flex flex-col group overflow-hidden"
           >
-            {/* Product image placeholder */}
-            <div className="w-full h-32 bg-sidebar-foreground/10 rounded-lg mb-4 flex items-center justify-center flex-shrink-0 group-hover:bg-sidebar-foreground/15 transition-colors">
-              <PackageIcon className="h-8 w-8 text-sidebar-foreground/40" />
-            </div>
-
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="p-1 rounded bg-sidebar-foreground/10 text-sidebar-foreground group-hover:bg-sidebar-foreground/15 transition-colors">
-                  <TypeIcon className="h-4 w-4" />
-                </div>
-                <Badge variant="outline" className="text-xs bg-sidebar-foreground/5 text-sidebar-foreground/80 border-sidebar-foreground/20">
-                  Product
-                </Badge>
+            {/* Product Image */}
+            <div className="h-40 bg-sidebar-foreground/10 flex items-center justify-center flex-shrink-0 group-hover:bg-sidebar-foreground/15 transition-colors relative">
+              <PackageIcon className="h-12 w-12 text-sidebar-foreground/40" />
+              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-sidebar-foreground/60 hover:text-sidebar-foreground bg-sidebar-accent/80 backdrop-blur-sm">
+                      <MoreVerticalIcon className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem>
+                      <EditIcon className="h-4 w-4 mr-2" />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => handleDelete(item.id, item.title)}
+                      className="text-red-600 focus:text-red-600"
+                    >
+                      <TrashIcon className="h-4 w-4 mr-2" />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-6 w-6 text-sidebar-foreground/60 hover:text-sidebar-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                    <MoreVerticalIcon className="h-3 w-3" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>
-                    <EditIcon className="h-4 w-4 mr-2" />
-                    Edit
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => handleDelete(item.id, item.title)}
-                    className="text-red-600 focus:text-red-600"
-                  >
-                    <TrashIcon className="h-4 w-4 mr-2" />
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
 
-            <h3 className="text-sidebar-foreground font-semibold mb-3 line-clamp-2 flex-shrink-0 leading-tight">
-              {item.title}
-            </h3>
-
-            {item.description && (
-              <p className="text-sidebar-foreground/70 text-sm mb-4 line-clamp-3 flex-1 leading-relaxed">
-                {item.description}
-              </p>
-            )}
-
-            <div className="flex items-center justify-between mb-3 flex-shrink-0">
-              {item.metadata.price && (
-                <div className="flex items-center gap-1 text-sidebar-foreground font-semibold">
-                  <DollarSignIcon className="h-4 w-4" />
-                  <span>${item.metadata.price}</span>
+            {/* Product Info */}
+            <div className="p-4 flex-1 flex flex-col">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="p-1 rounded bg-sidebar-foreground/10 text-sidebar-foreground group-hover:bg-sidebar-foreground/15 transition-colors">
+                    <PackageIcon className="h-4 w-4" />
+                  </div>
+                  <Badge variant="outline" className="text-xs bg-sidebar-foreground/10 text-sidebar-foreground/80 border-sidebar-foreground/20">
+                    Product
+                  </Badge>
                 </div>
+              </div>
+
+              <h3 className="text-sidebar-foreground font-semibold mb-3 line-clamp-2 flex-shrink-0 leading-tight text-lg">
+                {item.title}
+              </h3>
+
+              {item.description && (
+                <p className="text-sidebar-foreground/70 text-sm mb-4 line-clamp-3 flex-1 leading-relaxed">
+                  {item.description}
+                </p>
               )}
+
+              {/* Price and Rating */}
+              <div className="flex items-center justify-between mb-4 flex-shrink-0">
+                {item.metadata.price && (
+                  <div className="flex items-center gap-1 text-sidebar-foreground font-bold text-lg">
+                    <DollarSignIcon className="h-5 w-5" />
+                    <span>{item.metadata.price}</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-1 text-xs text-sidebar-foreground/60">
+                  <StarIcon className="h-3 w-3 fill-current" />
+                  <span>4.5</span>
+                  <span className="text-sidebar-foreground/40">(12)</span>
+                </div>
+              </div>
+
+              {/* Tags */}
               {item.tags.length > 0 && (
-                <div className="flex gap-1">
+                <div className="flex gap-1 mb-4 flex-shrink-0">
                   {item.tags.slice(0, 2).map((tag: string, index: number) => (
                     <Badge
                       key={index}
@@ -615,16 +724,25 @@ export function KnowledgeBase() {
                       {tag}
                     </Badge>
                   ))}
+                  {item.tags.length > 2 && (
+                    <Badge
+                      variant="outline"
+                      className="text-xs bg-sidebar-foreground/5 text-sidebar-foreground/60 border-sidebar-foreground/15"
+                    >
+                      +{item.tags.length - 2}
+                    </Badge>
+                  )}
                 </div>
               )}
-            </div>
 
-            <div className="flex items-center justify-between text-xs text-sidebar-foreground/60 flex-shrink-0 pt-2 border-t border-sidebar-border">
-              <div className="flex items-center gap-1">
-                <CalendarIcon className="h-3 w-3" />
-                <span>{formatDate(item.created_at)}</span>
+              {/* Product Footer */}
+              <div className="flex items-center justify-between text-xs text-sidebar-foreground/60 flex-shrink-0 pt-3 border-t border-sidebar-border">
+                <div className="flex items-center gap-1">
+                  <CalendarIcon className="h-3 w-3" />
+                  <span>Listed {formatDate(item.created_at)}</span>
+                </div>
+                <span className="text-sidebar-foreground/40">#{item.id.slice(-6)}</span>
               </div>
-              <span className="text-sidebar-foreground/40">#{item.id.slice(-6)}</span>
             </div>
           </Card>
         )
