@@ -224,24 +224,31 @@ export function KnowledgeBase() {
             <div className="mb-8">
               {/* Project Dropdown and Description */}
               <div className="mb-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <Select value={selectedProject} onValueChange={setSelectedProject}>
-                    <SelectTrigger className="w-auto min-w-[200px] bg-sidebar-accent border-sidebar-border text-sidebar-foreground">
-                      <SelectValue placeholder="Select Project">
-                        <span className="text-2xl sm:text-3xl font-semibold">
+                <div className="mb-2">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        className="p-0 h-auto text-left justify-start hover:bg-transparent"
+                      >
+                        <h1 className="text-2xl sm:text-3xl font-semibold text-sidebar-foreground">
                           {selectedProjectName}
-                        </span>
-                      </SelectValue>
-                      <ChevronDownIcon className="h-5 w-5 ml-2" />
-                    </SelectTrigger>
-                    <SelectContent>
+                        </h1>
+                        <ChevronDownIcon className="h-5 w-5 ml-2 text-sidebar-foreground/60" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="min-w-[200px]">
                       {projects.map((project) => (
-                        <SelectItem key={project.id} value={project.id}>
+                        <DropdownMenuItem 
+                          key={project.id} 
+                          onClick={() => setSelectedProject(project.id)}
+                          className={selectedProject === project.id ? "bg-sidebar-accent" : ""}
+                        >
                           {project.name}
-                        </SelectItem>
+                        </DropdownMenuItem>
                       ))}
-                    </SelectContent>
-                  </Select>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
                 <p className="text-sidebar-foreground/70">
                   Manage your knowledge base, issues, inquiries, and product information
@@ -306,11 +313,37 @@ export function KnowledgeBase() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {Array.from({ length: 6 }).map((_, index) => (
                   <Card key={index} className="bg-sidebar-accent border-sidebar-border p-6">
-                    <div className="animate-pulse">
-                      <div className="h-4 bg-sidebar-border rounded w-3/4 mb-3"></div>
-                      <div className="h-3 bg-sidebar-border rounded w-1/2 mb-4"></div>
-                      <div className="h-3 bg-sidebar-border rounded w-full mb-2"></div>
-                      <div className="h-3 bg-sidebar-border rounded w-2/3"></div>
+                    <div className="animate-pulse space-y-4">
+                      {/* Header with icon and badge */}
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-sidebar-border rounded-lg"></div>
+                          <div className="w-16 h-5 bg-sidebar-border rounded-full"></div>
+                        </div>
+                        <div className="w-6 h-6 bg-sidebar-border rounded"></div>
+                      </div>
+                      
+                      {/* Title */}
+                      <div className="h-5 bg-sidebar-border rounded w-3/4"></div>
+                      
+                      {/* Description */}
+                      <div className="space-y-2">
+                        <div className="h-3 bg-sidebar-border rounded w-full"></div>
+                        <div className="h-3 bg-sidebar-border rounded w-2/3"></div>
+                      </div>
+                      
+                      {/* Tags */}
+                      <div className="flex gap-1">
+                        <div className="h-5 bg-sidebar-border rounded-full w-12"></div>
+                        <div className="h-5 bg-sidebar-border rounded-full w-16"></div>
+                        <div className="h-5 bg-sidebar-border rounded-full w-10"></div>
+                      </div>
+                      
+                      {/* Footer */}
+                      <div className="flex items-center justify-between">
+                        <div className="h-3 bg-sidebar-border rounded w-20"></div>
+                        <div className="h-3 bg-sidebar-border rounded w-12"></div>
+                      </div>
                     </div>
                   </Card>
                 ))}
