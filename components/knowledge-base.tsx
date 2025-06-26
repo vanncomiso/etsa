@@ -4,39 +4,39 @@ import * as React from "react"
 import { useState, useEffect } from "react"
 import { 
   SearchIcon,
+  FilterIcon,
   PlusIcon,
+  FileTextIcon,
+  LinkIcon,
+  UploadIcon,
+  MoreVerticalIcon,
   CalendarIcon,
   TagIcon,
   UserIcon,
   ShieldIcon,
+  AlertTriangleIcon,
   TrendingUpIcon,
   UsersIcon,
+  ArrowUpIcon,
+  MessageCircleIcon,
+  ShareIcon,
   DollarSignIcon,
   PackageIcon,
   StarIcon,
   EyeIcon,
+  ShoppingCartIcon,
   BookOpenIcon,
   MessageSquareIcon,
-  BugIcon,
-  XIcon
+  HelpCircleIcon,
+  BugIcon
 } from "lucide-react"
 
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { useData } from '@/hooks/use-data'
 import { useProjects } from '@/hooks/use-projects'
-import { toast } from 'sonner'
 
 const dataTypes = [
   { id: 'context', name: 'Context', icon: BookOpenIcon },
@@ -45,31 +45,13 @@ const dataTypes = [
   { id: 'products', name: 'Products', icon: PackageIcon }
 ]
 
-interface CreateFormData {
-  title: string
-  description: string
-  content: string
-  tags: string[]
-  metadata: Record<string, any>
-  project_id: string
-}
-
 export function KnowledgeBase() {
   const [selectedType, setSelectedType] = useState<'context' | 'issues' | 'inquiries' | 'products'>('context')
   const [searchTerm, setSearchTerm] = useState("")
   const [showCreateForm, setShowCreateForm] = useState(false)
-  const [formData, setFormData] = useState<CreateFormData>({
-    title: '',
-    description: '',
-    content: '',
-    tags: [],
-    metadata: {},
-    project_id: ''
-  })
-  const [isCreating, setIsCreating] = useState(false)
   
   const { projects } = useProjects()
-  const { data, loading, error, createData } = useData(undefined, selectedType)
+  const { data, loading, error } = useData(undefined, selectedType)
 
   const filteredData = React.useMemo(() => {
     return data.filter(item => {
@@ -79,77 +61,6 @@ export function KnowledgeBase() {
       return matchesSearch
     })
   }, [data, searchTerm])
-
-  const handleCreateSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (!formData.title.trim() || !formData.project_id) {
-      toast.error('Please fill in all required fields')
-      return
-    }
-
-    setIsCreating(true)
-
-    try {
-      // Prepare metadata based on type
-      let metadata = { ...formData.metadata }
-      
-      if (selectedType === 'issues') {
-        metadata = {
-          priority: formData.metadata.priority || 'low',
-          reportCount: 1,
-          status: 'active',
-          ticketId: `#${Math.random().toString(36).substr(2, 6)}`
-        }
-      } else if (selectedType === 'products') {
-        metadata = {
-          price: formData.metadata.price || '',
-          rating: 4.5,
-          category: formData.metadata.category || '',
-          inStock: true
-        }
-      } else if (selectedType === 'inquiries') {
-        metadata = {
-          author: formData.metadata.author || 'Anonymous',
-          status: 'open'
-        }
-      }
-
-      const { error } = await createData({
-        title: formData.title,
-        description: formData.description,
-        content: formData.content,
-        type: selectedType,
-        tags: formData.tags,
-        metadata,
-        project_id: formData.project_id
-      })
-
-      if (error) {
-        toast.error(error)
-      } else {
-        toast.success(`${dataTypes.find(t => t.id === selectedType)?.name} created successfully!`)
-        setShowCreateForm(false)
-        setFormData({
-          title: '',
-          description: '',
-          content: '',
-          tags: [],
-          metadata: {},
-          project_id: ''
-        })
-      }
-    } catch (err) {
-      toast.error('An unexpected error occurred')
-    } finally {
-      setIsCreating(false)
-    }
-  }
-
-  const handleTagsChange = (value: string) => {
-    const tags = value.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
-    setFormData(prev => ({ ...prev, tags }))
-  }
 
   const renderContextCard = (item: typeof data[0]) => (
     <Card
@@ -173,6 +84,9 @@ export function KnowledgeBase() {
               </div>
             </div>
           </div>
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-sidebar-foreground/60 hover:text-sidebar-foreground flex-shrink-0">
+            <MoreVerticalIcon className="h-4 w-4" />
+          </Button>
         </div>
 
         {/* Description */}
@@ -337,6 +251,9 @@ export function KnowledgeBase() {
                   {new Date(item.created_at).toLocaleDateString()}
                 </span>
               </div>
+              <Button variant="ghost" size="icon" className="h-6 w-6 sm:h-8 sm:w-8 text-sidebar-foreground/60 hover:text-sidebar-foreground flex-shrink-0 self-start sm:self-center">
+                <MoreVerticalIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+              </Button>
             </div>
             <div className="mt-1">
               <Badge variant="outline" className="text-xs bg-sidebar-foreground/10 text-sidebar-foreground/70 border-sidebar-foreground/20">
@@ -356,28 +273,38 @@ export function KnowledgeBase() {
           </p>
         </div>
 
-        {/* Tags - responsive positioning */}
-        {item.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 pt-3 border-t border-sidebar-border">
-            {item.tags.slice(0, 3).map((tag, index) => (
-              <Badge
-                key={index}
-                variant="outline"
-                className="text-xs bg-sidebar-foreground/5 text-sidebar-foreground/60 border-sidebar-foreground/10"
-              >
-                {tag}
-              </Badge>
-            ))}
-            {item.tags.length > 3 && (
-              <Badge
-                variant="outline"
-                className="text-xs bg-sidebar-foreground/5 text-sidebar-foreground/60 border-sidebar-foreground/10"
-              >
-                +{item.tags.length - 3}
-              </Badge>
-            )}
+        {/* Actions with responsive layout */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 border-t border-sidebar-border">
+          <div className="flex items-center gap-4 sm:gap-6">
+            <Button variant="ghost" size="sm" className="h-8 px-2 text-sidebar-foreground/60 hover:text-sidebar-foreground">
+              <ArrowUpIcon className="h-3 w-3 mr-1" />
+              <span className="text-xs">Upvote</span>
+            </Button>
+            <Button variant="ghost" size="sm" className="h-8 px-2 text-sidebar-foreground/60 hover:text-sidebar-foreground">
+              <MessageCircleIcon className="h-3 w-3 mr-1" />
+              <span className="text-xs">Reply</span>
+            </Button>
+            <Button variant="ghost" size="sm" className="h-8 px-2 text-sidebar-foreground/60 hover:text-sidebar-foreground">
+              <ShareIcon className="h-3 w-3 mr-1" />
+              <span className="text-xs">Share</span>
+            </Button>
           </div>
-        )}
+          
+          {/* Tags - responsive positioning */}
+          {item.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {item.tags.slice(0, 2).map((tag, index) => (
+                <Badge
+                  key={index}
+                  variant="outline"
+                  className="text-xs bg-sidebar-foreground/5 text-sidebar-foreground/60 border-sidebar-foreground/10"
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </Card>
   )
@@ -411,6 +338,9 @@ export function KnowledgeBase() {
                 )}
               </div>
             </div>
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-sidebar-foreground/60 hover:text-sidebar-foreground flex-shrink-0">
+              <MoreVerticalIcon className="h-4 w-4" />
+            </Button>
           </div>
 
           {/* Description */}
@@ -432,12 +362,15 @@ export function KnowledgeBase() {
                 <span>{item.metadata?.rating || '4.5'}</span>
               </div>
             </div>
-            <div className="text-xs text-sidebar-foreground/60">
-              {item.metadata?.inStock !== undefined && (
-                <span className={item.metadata.inStock ? 'text-green-600' : 'text-red-600'}>
-                  {item.metadata.inStock ? 'In Stock' : 'Out of Stock'}
-                </span>
-              )}
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" className="h-8 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80">
+                <EyeIcon className="h-3 w-3 mr-1" />
+                View
+              </Button>
+              <Button size="sm" className="h-8 bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90">
+                <ShoppingCartIcon className="h-3 w-3 mr-1" />
+                Add
+              </Button>
             </div>
           </div>
 
@@ -447,6 +380,11 @@ export function KnowledgeBase() {
               <CalendarIcon className="h-3 w-3" />
               <span>Added {new Date(item.created_at).toLocaleDateString()}</span>
             </div>
+            {item.metadata?.inStock !== undefined && (
+              <span className={item.metadata.inStock ? 'text-green-600' : 'text-red-600'}>
+                {item.metadata.inStock ? 'In Stock' : 'Out of Stock'}
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -466,6 +404,7 @@ export function KnowledgeBase() {
                   <div className="h-3 bg-sidebar-border rounded w-1/2" />
                 </div>
               </div>
+              <div className="w-8 h-8 bg-sidebar-border rounded" />
             </div>
             <div className="space-y-2">
               <div className="h-3 bg-sidebar-border rounded w-full" />
@@ -534,6 +473,7 @@ export function KnowledgeBase() {
                     <div className="h-4 bg-sidebar-border rounded w-20" />
                     <div className="h-4 bg-sidebar-border rounded w-16" />
                   </div>
+                  <div className="w-6 h-6 bg-sidebar-border rounded" />
                 </div>
                 <div className="h-5 bg-sidebar-border rounded w-16 mt-1" />
               </div>
@@ -543,9 +483,16 @@ export function KnowledgeBase() {
               <div className="h-4 bg-sidebar-border rounded w-full" />
               <div className="h-4 bg-sidebar-border rounded w-5/6" />
             </div>
-            <div className="flex flex-wrap gap-1 pt-3 border-t border-sidebar-border">
-              <div className="h-5 bg-sidebar-border rounded w-12" />
-              <div className="h-5 bg-sidebar-border rounded w-16" />
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 border-t border-sidebar-border">
+              <div className="flex gap-4">
+                <div className="h-6 bg-sidebar-border rounded w-16" />
+                <div className="h-6 bg-sidebar-border rounded w-12" />
+                <div className="h-6 bg-sidebar-border rounded w-14" />
+              </div>
+              <div className="flex gap-1">
+                <div className="h-5 bg-sidebar-border rounded w-12" />
+                <div className="h-5 bg-sidebar-border rounded w-16" />
+              </div>
             </div>
           </div>
         </Card>
@@ -566,6 +513,7 @@ export function KnowledgeBase() {
                     <div className="h-5 bg-sidebar-border rounded w-20" />
                   </div>
                 </div>
+                <div className="w-8 h-8 bg-sidebar-border rounded" />
               </div>
               <div className="space-y-2">
                 <div className="h-4 bg-sidebar-border rounded w-full" />
@@ -576,7 +524,10 @@ export function KnowledgeBase() {
                   <div className="h-5 bg-sidebar-border rounded w-12" />
                   <div className="h-4 bg-sidebar-border rounded w-8" />
                 </div>
-                <div className="h-4 bg-sidebar-border rounded w-16" />
+                <div className="flex gap-2">
+                  <div className="h-8 bg-sidebar-border rounded w-16" />
+                  <div className="h-8 bg-sidebar-border rounded w-12" />
+                </div>
               </div>
             </div>
           </div>
@@ -602,217 +553,43 @@ export function KnowledgeBase() {
     }
   }
 
-  const renderCreateForm = () => (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="bg-sidebar-accent border-sidebar-border w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-sidebar-foreground">
-              Add New {dataTypes.find(t => t.id === selectedType)?.name}
-            </h2>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowCreateForm(false)}
-              className="text-sidebar-foreground/60 hover:text-sidebar-foreground"
-            >
-              <XIcon className="h-4 w-4" />
-            </Button>
-          </div>
-
-          <form onSubmit={handleCreateSubmit} className="space-y-6">
-            {/* Project Selection */}
-            <div className="space-y-2">
-              <Label htmlFor="project" className="text-sidebar-foreground font-medium">
-                Project *
-              </Label>
-              <Select
-                value={formData.project_id}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, project_id: value }))}
-              >
-                <SelectTrigger className="bg-sidebar border-sidebar-border text-sidebar-foreground">
-                  <SelectValue placeholder="Select a project" />
-                </SelectTrigger>
-                <SelectContent>
-                  {projects.map((project) => (
-                    <SelectItem key={project.id} value={project.id}>
-                      {project.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Title */}
-            <div className="space-y-2">
-              <Label htmlFor="title" className="text-sidebar-foreground font-medium">
-                Title *
-              </Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                placeholder={`Enter ${selectedType} title`}
-                className="bg-sidebar border-sidebar-border text-sidebar-foreground"
-              />
-            </div>
-
-            {/* Description */}
-            <div className="space-y-2">
-              <Label htmlFor="description" className="text-sidebar-foreground font-medium">
-                Description
-              </Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder={`Describe this ${selectedType}`}
-                className="bg-sidebar border-sidebar-border text-sidebar-foreground min-h-[100px]"
-              />
-            </div>
-
-            {/* Content */}
-            <div className="space-y-2">
-              <Label htmlFor="content" className="text-sidebar-foreground font-medium">
-                Content
-              </Label>
-              <Textarea
-                id="content"
-                value={formData.content}
-                onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                placeholder={`Additional content for this ${selectedType}`}
-                className="bg-sidebar border-sidebar-border text-sidebar-foreground min-h-[120px]"
-              />
-            </div>
-
-            {/* Type-specific fields */}
-            {selectedType === 'issues' && (
-              <div className="space-y-2">
-                <Label htmlFor="priority" className="text-sidebar-foreground font-medium">
-                  Priority
-                </Label>
-                <Select
-                  value={formData.metadata.priority || 'low'}
-                  onValueChange={(value) => setFormData(prev => ({ 
-                    ...prev, 
-                    metadata: { ...prev.metadata, priority: value }
-                  }))}
-                >
-                  <SelectTrigger className="bg-sidebar border-sidebar-border text-sidebar-foreground">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            {selectedType === 'products' && (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="price" className="text-sidebar-foreground font-medium">
-                    Price
-                  </Label>
-                  <Input
-                    id="price"
-                    value={formData.metadata.price || ''}
-                    onChange={(e) => setFormData(prev => ({ 
-                      ...prev, 
-                      metadata: { ...prev.metadata, price: e.target.value }
-                    }))}
-                    placeholder="$99.99"
-                    className="bg-sidebar border-sidebar-border text-sidebar-foreground"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="category" className="text-sidebar-foreground font-medium">
-                    Category
-                  </Label>
-                  <Input
-                    id="category"
-                    value={formData.metadata.category || ''}
-                    onChange={(e) => setFormData(prev => ({ 
-                      ...prev, 
-                      metadata: { ...prev.metadata, category: e.target.value }
-                    }))}
-                    placeholder="Software, Hardware, etc."
-                    className="bg-sidebar border-sidebar-border text-sidebar-foreground"
-                  />
-                </div>
-              </>
-            )}
-
-            {selectedType === 'inquiries' && (
-              <div className="space-y-2">
-                <Label htmlFor="author" className="text-sidebar-foreground font-medium">
-                  Author
-                </Label>
-                <Input
-                  id="author"
-                  value={formData.metadata.author || ''}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    metadata: { ...prev.metadata, author: e.target.value }
-                  }))}
-                  placeholder="Author name"
-                  className="bg-sidebar border-sidebar-border text-sidebar-foreground"
-                />
-              </div>
-            )}
-
-            {/* Tags */}
-            <div className="space-y-2">
-              <Label htmlFor="tags" className="text-sidebar-foreground font-medium">
-                Tags
-              </Label>
-              <Input
-                id="tags"
-                value={formData.tags.join(', ')}
-                onChange={(e) => handleTagsChange(e.target.value)}
-                placeholder="tag1, tag2, tag3"
-                className="bg-sidebar border-sidebar-border text-sidebar-foreground"
-              />
-              <p className="text-xs text-sidebar-foreground/60">
-                Separate tags with commas
-              </p>
-            </div>
-
-            {/* Form Actions */}
-            <div className="flex gap-3 justify-end pt-4 border-t border-sidebar-border">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowCreateForm(false)}
-                className="bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={isCreating}
-                className="bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90"
-              >
-                {isCreating ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-sidebar border-t-transparent rounded-full animate-spin mr-2"></div>
-                    Creating...
-                  </>
-                ) : (
-                  `Create ${dataTypes.find(t => t.id === selectedType)?.name}`
-                )}
-              </Button>
-            </div>
-          </form>
-        </div>
-      </Card>
-    </div>
-  )
-
   if (showCreateForm) {
-    return renderCreateForm()
+    return (
+      <div className="flex flex-col h-full w-full max-w-full overflow-hidden bg-background">
+        <div className="flex-1 overflow-y-auto min-h-0">
+          <div className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+            <div className="max-w-2xl mx-auto">
+              <div className="mb-8">
+                <h1 className="text-2xl font-bold text-sidebar-foreground mb-2">
+                  Add New {dataTypes.find(t => t.id === selectedType)?.name}
+                </h1>
+                <p className="text-sidebar-foreground/70">
+                  Create a new {selectedType} entry for your knowledge base
+                </p>
+              </div>
+              
+              <Card className="bg-sidebar-accent border-sidebar-border p-6">
+                <p className="text-sidebar-foreground/70 text-center py-8">
+                  Create form for {selectedType} will be implemented here
+                </p>
+                <div className="flex gap-3 justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowCreateForm(false)}
+                    className="bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
+                  >
+                    Cancel
+                  </Button>
+                  <Button className="bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90">
+                    Create {dataTypes.find(t => t.id === selectedType)?.name}
+                  </Button>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
